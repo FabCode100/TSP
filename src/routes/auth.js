@@ -24,6 +24,12 @@ async function authRoutes(fastify, options) {
     const user = await authService.getMe(request.user.id);
     return { data: user, error: null, meta: null };
   });
+
+  fastify.post('/onboarding', { preHandler: [authenticate] }, async (request, reply) => {
+    const { answers } = request.body;
+    await authService.updateOnboarding(request.user.id, answers);
+    return { data: { success: true }, error: null, meta: null };
+  });
 }
 
 module.exports = authRoutes;

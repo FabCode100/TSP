@@ -20,7 +20,7 @@ class AuthService {
       data: {
         email,
         password: hashedPassword,
-        onboarding: onboardingAnswers,
+        onboarding: onboardingAnswers ? JSON.stringify(onboardingAnswers) : null,
       },
     });
 
@@ -61,7 +61,7 @@ class AuthService {
   async getMe(userId) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, createdAt: true },
+      select: { id: true, email: true, createdAt: true, onboarding: true },
     });
     const entryCount = await prisma.entry.count({ where: { userId } });
 
@@ -84,6 +84,12 @@ class AuthService {
         token,
         expiresAt,
       },
+    });
+  }
+  async updateOnboarding(userId, answers) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: { onboarding: JSON.stringify(answers) },
     });
   }
 }

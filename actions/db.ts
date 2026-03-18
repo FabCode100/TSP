@@ -1,186 +1,170 @@
-'use server';
+// This file replaces the Next.js Server Actions to work with Capacitor (Static Export).
+// It acts as an HTTP client connecting to the Fastify backend.
 
-import { PrismaClient } from '@prisma/client';
-import { extractIdentityGraph } from '@/lib/aiClient';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
-const prisma = new PrismaClient();
+// MOCK USER: We use a fresh email to ensure we are registering a brand new user with correctly hashed password.
+const MOCK_EMAIL = 'agent_tester_01@symbiosis.ai';
+const MOCK_PASS = 'tsp_secure_agent_2026';
 
-// For MVP, we'll use a single user ID
-const USER_ID = 'user-1';
+// MVP: Auto-login/register strategy
+async function getAuthToken() {
+  if (typeof window === 'undefined') return '';
+  let token = localStorage.getItem('tsp_token');
+  if (token) return token;
+
+  console.log('[Auth] No token found. Attempting to login/register mock user:', MOCK_EMAIL);
+
+  // Try to login mock user
+  try {
+    const loginRes = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: MOCK_EMAIL, password: MOCK_PASS })
+    });
+    
+    if (loginRes.ok) {
+      const data = await loginRes.json();
+      token = data.data.token;
+      if (token) {
+        localStorage.setItem('tsp_token', token);
+        console.log('[Auth] Login successful.');
+        return token;
+      }
+    } else {
+      console.warn('[Auth] Login failed (status ' + loginRes.status + '). Trying registration...');
+    }
+
+    // If login fails, try register
+    const regRes = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: MOCK_EMAIL, password: MOCK_PASS, onboardingAnswers: [] })
+    });
+    
+    if (regRes.ok) {
+      const data = await regRes.json();
+      token = data.data.token;
+      if (token) {
+        localStorage.setItem('tsp_token', token);
+        console.log('[Auth] Registration successful.');
+        return token;
+      }
+    } else {
+      const errorData = await regRes.json();
+      console.error('[Auth] Registration failed:', errorData);
+    }
+  } catch (e) {
+    console.warn('[Auth] Backend connection failed. Is Fastify running on 3001?', e);
+  }
+  return '';
+}
+
+async function fetchAPI(endpoint: string, options: RequestInit = {}): Promise<any> {
+  const token = await getAuthToken();
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(token && { Authorization: `Bearer ${token}` }),
+    ...(options.headers || {}),
+  };
+
+  let res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
+  
+  // If unauthorized, clear token and retry once
+  if (res.status === 401 && typeof window !== 'undefined') {
+    console.warn('[API] Unauthorized (401). Clearing token and retrying endpoint:', endpoint);
+    localStorage.removeItem('tsp_token');
+    const newToken = await getAuthToken();
+    const retryHeaders = {
+      'Content-Type': 'application/json',
+      ...(newToken && { Authorization: `Bearer ${newToken}` }),
+      ...(options.headers || {}),
+    };
+    res = await fetch(`${API_URL}${endpoint}`, { ...options, headers: retryHeaders });
+  }
+
+  if (!res.ok) {
+    const errText = `API Error ${res.status}: ${res.statusText}`;
+    console.error(`[API] ${endpoint} failed:`, errText);
+    throw new Error(errText);
+  }
+  const json = await res.json();
+  return json.data;
+}
 
 export async function getOrCreateUser() {
-  let user = await prisma.user.findUnique({ where: { id: USER_ID } });
-  if (!user) {
-    user = await prisma.user.create({
-      data: {
-        id: USER_ID,
-        email: 'user@example.com',
-        password: 'password', // Mock
-      },
-    });
+  try {
+    const user = await fetchAPI('/auth/me');
+    // Se 'onboarding' for uma string (JSON), avaliamos se está preenchida.
+    // No nosso caso, o onboarding é considerado completo se houver dados lá.
+    const onboardingComplete = user.onboarding && user.onboarding !== '[]';
+    return { ...user, onboarding: onboardingComplete };
+  } catch (e) {
+    console.warn('[API] Could not fetch user status, defaulting to incomplete onboarding.');
+    return { id: 'guest', onboarding: false };
   }
-  return user;
 }
 
 export async function saveOnboarding(answers: string[]) {
-  const user = await getOrCreateUser();
-  await prisma.user.update({
-    where: { id: user.id },
-    data: { onboarding: JSON.stringify(answers) },
-  });
-
-  // Create entries for each answer
+  // 1. Salva as respostas como entradas no banco (retrocomputação)
   const types = ['ORIGEM', 'PERMANÊNCIA', 'DECISÃO', 'TRANSFORMAÇÃO', 'ESSÊNCIA'];
   for (let i = 0; i < answers.length; i++) {
     if (answers[i].trim()) {
       await addEntry(answers[i], types[i] || 'REFLEXÃO');
-      
-      // Extract identity graph from the answer and update the graph
-      try {
-        const graphData = await extractIdentityGraph(answers[i]);
-        if (graphData.concepts.length > 0) {
-          await updateGraph(graphData.concepts, graphData.edges);
-        }
-      } catch (e) {
-        console.error('Failed to extract graph for onboarding answer:', e);
-      }
     }
   }
 
-  // After onboarding, extract initial patterns
-  try {
-    const entries = await getEntries();
-    const graph = await getGraphData();
-    const { extractPatterns } = await import('@/lib/aiClient');
-    const patterns = await extractPatterns(entries.slice(0, 10), graph.nodes.slice(0, 10));
-    if (patterns.length > 0) {
-      await savePatterns(patterns);
-    }
-  } catch (e) {
-    console.error('Failed to extract initial patterns:', e);
-  }
-}
-
-export async function getEntries() {
-  const user = await getOrCreateUser();
-  return prisma.entry.findMany({
-    where: { userId: user.id, archived: false },
-    orderBy: { createdAt: 'desc' },
+  // 2. Marca o onboarding como concluído no modelo do usuário
+  await fetchAPI('/auth/onboarding', {
+    method: 'POST',
+    body: JSON.stringify({ answers })
   });
 }
 
+export async function getEntries() {
+  try {
+    const data = await fetchAPI('/entries');
+    return data || [];
+  } catch (e) {
+    return [];
+  }
+}
+
 export async function addEntry(content: string, type: string) {
-  const user = await getOrCreateUser();
-  return prisma.entry.create({
-    data: {
-      userId: user.id,
-      content,
-      type,
-    },
+  return fetchAPI('/entries', {
+    method: 'POST',
+    body: JSON.stringify({ content, type })
   });
 }
 
 export async function removeEntry(id: string) {
-  return prisma.entry.update({
-    where: { id },
-    data: { archived: true },
+  return fetchAPI(`/entries/${id}`, {
+    method: 'DELETE'
   });
 }
 
 export async function getGraphData() {
-  const user = await getOrCreateUser();
-  const nodes = await prisma.graphNode.findMany({ where: { userId: user.id } });
-  const edges = await prisma.graphEdge.findMany({ where: { userId: user.id } });
-  return { nodes, edges };
+  try {
+    const data = await fetchAPI('/graph');
+    return data || { nodes: [], edges: [] };
+  } catch (e) {
+    return { nodes: [], edges: [] };
+  }
 }
 
 export async function updateGraph(newNodes: any[], newEdges: any[]) {
-  const user = await getOrCreateUser();
-  
-  // Very simplified graph update for MVP
-  for (const n of newNodes) {
-    const label = n.label?.toLowerCase().trim();
-    if (!label) continue;
-
-    const existing = await prisma.graphNode.findFirst({
-      where: { userId: user.id, label }
-    });
-    if (existing) {
-      await prisma.graphNode.update({
-        where: { id: existing.id },
-        data: { weight: existing.weight + 0.1 }
-      });
-    } else {
-      await prisma.graphNode.create({
-        data: {
-          userId: user.id,
-          label,
-          type: n.type || 'conceito',
-          weight: 1.0
-        }
-      });
-    }
-  }
-
-  // To create edges, we need the actual node IDs.
-  // We'll fetch all nodes again to map labels to IDs.
-  const allNodes = await prisma.graphNode.findMany({ where: { userId: user.id } });
-  const nodeMap = new Map(allNodes.map(n => [n.label, n.id]));
-
-  for (const e of newEdges) {
-    const sourceLabel = e.sourceLabel?.toLowerCase().trim();
-    const targetLabel = e.targetLabel?.toLowerCase().trim();
-    const sourceId = nodeMap.get(sourceLabel);
-    const targetId = nodeMap.get(targetLabel);
-    if (sourceId && targetId && sourceId !== targetId) {
-      const [id1, id2] = [sourceId, targetId].sort();
-      const existingEdge = await prisma.graphEdge.findFirst({
-        where: { sourceId: id1, targetId: id2 }
-      });
-      if (existingEdge) {
-        await prisma.graphEdge.update({
-          where: { id: existingEdge.id },
-          data: { strength: existingEdge.strength + 0.1 }
-        });
-      } else {
-        await prisma.graphEdge.create({
-          data: {
-            userId: user.id,
-            sourceId: id1,
-            targetId: id2,
-            strength: 0.5
-          }
-        });
-      }
-    }
-  }
+  console.log('[API] Graph update requested (client), but handled by Fastify backend via entry creation.');
 }
 
 export async function getPatterns() {
-  const user = await getOrCreateUser();
-  const patterns = await prisma.pattern.findMany({
-    where: { userId: user.id },
-    orderBy: { detectedAt: 'desc' },
-  });
-  return patterns;
+  try {
+    const data = await fetchAPI('/patterns');
+    return data || [];
+  } catch (e) {
+    return [];
+  }
 }
 
 export async function savePatterns(patterns: any[]) {
-  const user = await getOrCreateUser();
-  for (const p of patterns) {
-    const existing = await prisma.pattern.findFirst({
-      where: { userId: user.id, title: p.title }
-    });
-    if (!existing) {
-      await prisma.pattern.create({
-        data: {
-          userId: user.id,
-          type: p.type,
-          title: p.title,
-          description: p.description,
-          relatedNodes: JSON.stringify(p.relatedNodes || []),
-        }
-      });
-    }
-  }
+  console.log('[API] Patterns update requested (client), but handled by Fastify backend via analyzer.');
 }

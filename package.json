@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev:web": "next dev",
+    "dev:api": "node src/server.js",
+    "dev": "npx concurrently \"npm run dev:web\" \"npm run dev:api\"",
     "build": "next build",
     "start": "next start",
     "start:api": "node src/server.js",
@@ -11,6 +13,10 @@
     "clean": "next clean"
   },
   "dependencies": {
+    "@capacitor/android": "^8.2.0",
+    "@capacitor/cli": "^8.2.0",
+    "@capacitor/core": "^8.2.0",
+    "@capacitor/ios": "^8.2.0",
     "@fastify/cors": "^11.2.0",
     "@google/genai": "^1.17.0",
     "@hookform/resolvers": "^5.2.1",

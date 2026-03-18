@@ -25,7 +25,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const refreshEntries = async () => {
     const data = await getEntries();
-    const formatted = data.map(e => ({
+    const formatted = data.map((e: any) => ({
       id: e.id,
       time: new Date(e.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
       type: e.type,

@@ -1,45 +1,33 @@
 const { PrismaClient } = require('@prisma/client');
-const { GoogleGenAI, Type } = require('@google/genai');
+const Groq = require('groq-sdk');
 
 const prisma = new PrismaClient();
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY });
+const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY });
 
 class GraphService {
   async extractAndUpdateGraph(userId, content) {
     try {
       const prompt = `Extraia de 2 a 5 conceitos-chave desta entrada de diário pessoal.
-Retorne APENAS JSON: { concepts: [{label, type}] }
+Retorne APENAS um JSON válido.
 Tipos possíveis: conceito | emocao | pessoa | evento
 
 Entrada:
-${content}`;
+${content}
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              concepts: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    label: { type: Type.STRING },
-                    type: { type: Type.STRING },
-                  },
-                  required: ['label', 'type'],
-                },
-              },
-            },
-            required: ['concepts'],
-          },
-        },
+Retorne no formato:
+{
+  "concepts": [
+    {"label": "String", "type": "String"}
+  ]
+}`;
+
+      const response = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
       });
 
-      const result = JSON.parse(response.text);
+      const result = JSON.parse(response.choices[0]?.message?.content || '{}');
       const concepts = result.concepts || [];
       const newNodes = [];
       const updatedNodes = [];

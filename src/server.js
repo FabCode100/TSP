@@ -1,18 +1,9 @@
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 const buildApp = require('./app');
 
 const start = async () => {
   const app = buildApp({
-    logger: {
-      level: 'info',
-      transport: {
-        target: 'pino-pretty',
-        options: {
-          translateTime: 'HH:MM:ss Z',
-          ignore: 'pid,hostname',
-        },
-      },
-    },
+    logger: true,
   });
 
   const port = process.env.PORT || 3001;

@@ -1,8 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
-const { GoogleGenAI, Type } = require('@google/genai');
+const Groq = require('groq-sdk');
 
 const prisma = new PrismaClient();
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY });
+const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY });
 
 class PatternService {
   async analyzeNewEntry(userId, entryId) {
@@ -31,64 +31,20 @@ ${entries.map(e => e.content).join('\n---\n')}
 Top Nodes:
 ${topNodes.map(n => n.label).join(', ')}
 
-Retorne APENAS JSON:
+Retorne APENAS um JSON válido no formato:
 {
   "tensoes": [{"title": "String", "sideA": "String", "sideB": "String", "relatedNodes": ["String"]}],
   "nucleo": [{"nodeId": "String", "description": "String"}],
   "marcos": [{"title": "String", "description": "String", "period": "String"}]
 }`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.1-pro-preview',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              tensoes: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    title: { type: Type.STRING },
-                    sideA: { type: Type.STRING },
-                    sideB: { type: Type.STRING },
-                    relatedNodes: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  },
-                  required: ['title', 'sideA', 'sideB', 'relatedNodes'],
-                },
-              },
-              nucleo: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    nodeId: { type: Type.STRING },
-                    description: { type: Type.STRING },
-                  },
-                  required: ['nodeId', 'description'],
-                },
-              },
-              marcos: {
-                type: Type.ARRAY,
-                items: {
-                  type: Type.OBJECT,
-                  properties: {
-                    title: { type: Type.STRING },
-                    description: { type: Type.STRING },
-                    period: { type: Type.STRING },
-                  },
-                  required: ['title', 'description', 'period'],
-                },
-              },
-            },
-            required: ['tensoes', 'nucleo', 'marcos'],
-          },
-        },
+      const response = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
       });
 
-      const result = JSON.parse(response.text);
+      const result = JSON.parse(response.choices[0]?.message?.content || '{}');
       const newPatterns = [];
 
       // Process tensoes
@@ -103,7 +59,7 @@ Retorne APENAS JSON:
               type: 'tensao',
               title: t.title,
               description: `${t.sideA} vs ${t.sideB}`,
-              relatedNodes: t.relatedNodes,
+              relatedNodes: JSON.stringify(t.relatedNodes),
             },
           });
           newPatterns.push(p);
@@ -122,7 +78,7 @@ Retorne APENAS JSON:
               type: 'nucleo',
               title: `Núcleo: ${n.nodeId}`,
               description: n.description,
-              relatedNodes: [n.nodeId],
+              relatedNodes: JSON.stringify([n.nodeId]),
             },
           });
           newPatterns.push(p);
@@ -141,7 +97,7 @@ Retorne APENAS JSON:
               type: 'marco',
               title: m.title,
               description: `${m.period}: ${m.description}`,
-              relatedNodes: [],
+              relatedNodes: JSON.stringify([]),
             },
           });
           newPatterns.push(p);
@@ -161,13 +117,7 @@ Retorne APENAS JSON:
       orderBy: { detectedAt: 'desc' },
     });
 
-    const grouped = {
-      nucleo: patterns.filter(p => p.type === 'nucleo'),
-      tensoes: patterns.filter(p => p.type === 'tensao'),
-      marcos: patterns.filter(p => p.type === 'marco'),
-    };
-
-    return { data: grouped, meta: { total: patterns.length } };
+    return { data: patterns, meta: { total: patterns.length } };
   }
 
   async markAsSeen(userId, patternId) {

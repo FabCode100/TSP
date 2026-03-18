@@ -30,7 +30,7 @@ Retorne APENAS JSON no formato:
   try {
     const response = await groq.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: 'openai/gpt-oss-120b',
+      model: 'llama-3.3-70b-versatile',
       response_format: { type: 'json_object' },
     });
 
@@ -99,7 +99,7 @@ Identifique exatamente 1 "nucleo", 1 "tensao" e 1 "marco" e retorne APENAS JSON 
   try {
     const response = await groq.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: 'openai/gpt-oss-120b',
+      model: 'llama-3.3-70b-versatile',
       response_format: { type: 'json_object' },
     });
 

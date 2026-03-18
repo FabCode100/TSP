@@ -29,9 +29,9 @@ export default function Nucleo() {
     async function fetchData() {
       const data = await getGraphData();
       
-      const maxWeight = Math.max(...data.nodes.map(n => n.weight), 1);
+      const maxWeight = Math.max(...data.nodes.map((n: any) => n.weight), 1);
       
-      const nodes: Node[] = data.nodes.map(n => ({
+      const nodes: Node[] = data.nodes.map((n: any) => ({
         id: n.id,
         label: n.label,
         group: n.type === 'conceito' ? 0 : n.type === 'emocao' ? 1 : 2,
@@ -39,7 +39,7 @@ export default function Nucleo() {
         frequency: n.weight / maxWeight,
       }));
 
-      const links: Link[] = data.edges.map(e => ({
+      const links: Link[] = data.edges.map((e: any) => ({
         source: e.sourceId,
         target: e.targetId,
         value: e.strength,

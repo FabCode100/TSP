@@ -1,8 +1,8 @@
 const { PrismaClient } = require('@prisma/client');
-const { GoogleGenAI, Type } = require('@google/genai');
+const Groq = require('groq-sdk');
 
 const prisma = new PrismaClient();
-const ai = new GoogleGenAI({ apiKey: process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY });
+const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY });
 
 class MirrorService {
   async chatStream(userId, message, history, reply) {
@@ -26,20 +26,15 @@ Aqui estão suas últimas 5 entradas: ${recentEntries.map(e => e.content).join('
 Responda com profundidade filosófica, sem julgamento, em português.
 Máximo 3 parágrafos por resposta.`;
 
-    const chat = ai.chats.create({
-      model: 'gemini-3.1-pro-preview',
-      config: {
-        systemInstruction: systemPrompt,
-      },
-    });
-
-    // We don't have a way to set history directly in ai.chats.create with this SDK easily,
-    // so we'll just send the message. For a real app, we'd format the history into the contents.
-    // For now, we'll just send the current message.
-    let fullResponse = '';
-
     try {
-      const responseStream = await chat.sendMessageStream({ message });
+      const stream = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: message }
+        ],
+        stream: true,
+      });
 
       reply.raw.writeHead(200, {
         'Content-Type': 'text/event-stream',
@@ -47,10 +42,12 @@ Máximo 3 parágrafos por resposta.`;
         'Connection': 'keep-alive',
       });
 
-      for await (const chunk of responseStream) {
-        if (chunk.text) {
-          fullResponse += chunk.text;
-          reply.raw.write(`data: ${JSON.stringify({ chunk: chunk.text })}\n\n`);
+      let fullResponse = '';
+      for await (const chunk of stream) {
+        const content = chunk.choices[0]?.delta?.content || '';
+        if (content) {
+          fullResponse += content;
+          reply.raw.write(`data: ${JSON.stringify({ chunk: content })}\n\n`);
         }
       }
 
@@ -88,25 +85,13 @@ Retorne APENAS JSON:
   "suggestions": ["Pergunta 1", "Pergunta 2", "Pergunta 3"]
 }`;
 
-      const response = await ai.models.generateContent({
-        model: 'gemini-3-flash-preview',
-        contents: prompt,
-        config: {
-          responseMimeType: 'application/json',
-          responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              suggestions: {
-                type: Type.ARRAY,
-                items: { type: Type.STRING },
-              },
-            },
-            required: ['suggestions'],
-          },
-        },
+      const response = await groq.chat.completions.create({
+        model: 'llama-3.3-70b-versatile',
+        messages: [{ role: 'user', content: prompt }],
+        response_format: { type: 'json_object' },
       });
 
-      const result = JSON.parse(response.text);
+      const result = JSON.parse(response.choices[0]?.message?.content || '{}');
       return { suggestions: result.suggestions || ['O que o Núcleo diz?', 'Explorar tensão', 'Último insight'] };
     } catch (error) {
       console.error('Error generating suggestions:', error);

@@ -40,7 +40,7 @@ export default function Espelho() {
     async function fetchContext() {
       const [graph, entries] = await Promise.all([getGraphData(), getEntries()]);
       setContextData({
-        nodes: graph.nodes.sort((a, b) => b.weight - a.weight).slice(0, 10),
+        nodes: graph.nodes.sort((a: any, b: any) => b.weight - a.weight).slice(0, 10),
         entries: entries.slice(0, 10)
       });
     }

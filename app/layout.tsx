@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Cormorant_Garamond, DM_Mono, Instrument_Serif } from 'next/font/google';
 import './globals.css';
 import { AppWrapper } from '@/components/AppWrapper';
@@ -23,11 +23,14 @@ const instrumentSerif = Instrument_Serif({
   variable: '--font-body',
 });
 
+export const viewport: Viewport = {
+  themeColor: '#050508',
+};
+
 export const metadata: Metadata = {
   title: 'The Symbiosis Protocol',
   description: 'The Symbiosis Protocol (TSP)',
   manifest: '/manifest.json',
-  themeColor: '#050508',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',

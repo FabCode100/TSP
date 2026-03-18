@@ -1,6 +1,7 @@
 'use server';
 
 import { PrismaClient } from '@prisma/client';
+import { extractIdentityGraph } from '@/lib/aiClient';
 
 const prisma = new PrismaClient();
 
@@ -27,6 +28,24 @@ export async function saveOnboarding(answers: string[]) {
     where: { id: user.id },
     data: { onboarding: JSON.stringify(answers) },
   });
+
+  // Create entries for each answer
+  const types = ['ORIGEM', 'PERMANÊNCIA', 'DECISÃO', 'TRANSFORMAÇÃO', 'ESSÊNCIA'];
+  for (let i = 0; i < answers.length; i++) {
+    if (answers[i].trim()) {
+      await addEntry(answers[i], types[i] || 'REFLEXÃO');
+      
+      // Extract identity graph from the answer and update the graph
+      try {
+        const graphData = await extractIdentityGraph(answers[i]);
+        if (graphData.concepts.length > 0) {
+          await updateGraph(graphData.concepts, graphData.edges);
+        }
+      } catch (e) {
+        console.error('Failed to extract graph for onboarding answer:', e);
+      }
+    }
+  }
 }
 
 export async function getEntries() {

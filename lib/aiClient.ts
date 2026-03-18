@@ -30,7 +30,7 @@ Retorne APENAS JSON no formato:
   try {
     const response = await groq.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: 'llama3-8b-8192',
+      model: 'openai/gpt-oss-120b',
       response_format: { type: 'json_object' },
     });
 
@@ -87,7 +87,7 @@ Identifique até 3 padrões e retorne APENAS JSON válido no formato:
   try {
     const response = await groq.chat.completions.create({
       messages: [{ role: 'user', content: prompt }],
-      model: 'llama3-8b-8192',
+      model: 'openai/gpt-oss-120b',
       response_format: { type: 'json_object' },
     });
 

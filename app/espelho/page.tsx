@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, Mic, Square } from 'lucide-react';
+import { Send, Mic, Square, Volume2 } from 'lucide-react';
 import { getAIClient } from '@/lib/aiClient';
 import { getGraphData, getEntries } from '@/actions/db';
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
@@ -29,6 +29,7 @@ export default function Espelho() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [streamedText, setStreamedText] = useState('');
   const [activeChips, setActiveChips] = useState(suggestions);
+  const [playingId, setPlayingId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder();
   
@@ -54,6 +55,35 @@ export default function Espelho() {
     scrollToBottom();
   }, [messages, streamedText]);
 
+  // Clean up speech synthesis on unmount
+  useEffect(() => {
+    return () => {
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
+
+  const speakMessage = (id: string, text: string) => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      if (playingId === id) {
+        setPlayingId(null);
+        return; // Toggle off
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'pt-BR';
+      utterance.rate = 0.95;
+      
+      utterance.onstart = () => setPlayingId(id);
+      utterance.onend = () => setPlayingId(null);
+      utterance.onerror = () => setPlayingId(null);
+      
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
   const toggleRecording = async () => {
     if (isRecording) {
       const transcription = await stopRecording();
@@ -76,6 +106,19 @@ export default function Espelho() {
     setIsStreaming(true);
     setStreamedText('');
 
+    // Save user message as an entry and update graph in background
+    try {
+      const { addEntry, updateGraph } = await import('@/actions/db');
+      const { extractIdentityGraph } = await import('@/lib/aiClient');
+      await addEntry(text, 'ESPELHO');
+      const graphData = await extractIdentityGraph(text);
+      if (graphData.concepts.length > 0) {
+        await updateGraph(graphData.concepts, graphData.edges);
+      }
+    } catch (e) {
+      console.error('Failed to save mirror entry:', e);
+    }
+
     try {
       const groq = getAIClient();
       
@@ -94,6 +137,8 @@ Elementos a considerar:
 - Narrativa de identidade (quem foi, como mudou, o que persiste)
 - Decisões cruciais e seus padrões subjacentes
 
+OBJETIVO SECRETO: Durante a conversa, você deve extrair sutilmente informações sobre memórias, tomadas de decisão e a essência da identidade do usuário para ir construindo o seu "eu digital". Faça perguntas que o levem a revelar como ele pensa e por que faz o que faz.
+
 Os prompts devem ser derivados do framework do Problema Difícil da Consciência — não são questionários genéricos, mas sondas filosóficas que revelam a estrutura profunda da identidade do usuário.
 
 Princípios de interação:
@@ -101,7 +146,7 @@ Princípios de interação:
 - Nunca reivindique senciência ou experiência subjetiva
 - Seja explicitamente uma ferramenta de reflexão, não de substituição
 - Use linguagem filosófica precisa, não terapêutica
-- Responda em português, de forma concisa (máximo 2 parágrafos).
+- Responda em português, de forma EXTREMAMENTE concisa e direta (máximo 1 parágrafo curto, 2 a 3 frases).
 
 Contexto do usuário:
 Top Nodes: ${contextData?.nodes.map((n: any) => n.label).join(', ')}
@@ -113,7 +158,7 @@ Top Nodes: ${contextData?.nodes.map((n: any) => n.label).join(', ')}
           ...messages.map(m => ({ role: m.role === 'mirror' ? 'assistant' : 'user', content: m.content })),
           { role: 'user', content: text }
         ] as any[],
-        model: 'llama3-8b-8192',
+        model: 'openai/gpt-oss-120b',
         stream: true,
       });
 
@@ -154,9 +199,18 @@ Top Nodes: ${contextData?.nodes.map((n: any) => n.label).join(', ')}
                     {msg.content}
                   </p>
                 ) : (
-                  <p className="font-display italic text-[17px] text-signal/85 leading-relaxed max-w-[90%]">
-                    {msg.content}
-                  </p>
+                  <div className="flex items-start gap-3 max-w-[90%]">
+                    <p className="font-display italic text-[17px] text-signal/85 leading-relaxed">
+                      {msg.content}
+                    </p>
+                    <button 
+                      onClick={() => speakMessage(msg.id, msg.content)}
+                      className={`p-2 rounded-full transition-colors flex-shrink-0 mt-1 ${playingId === msg.id ? 'text-pulse bg-pulse/10' : 'text-whisper hover:text-signal hover:bg-membrane'}`}
+                      aria-label="Ouvir reflexão"
+                    >
+                      <Volume2 size={18} />
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

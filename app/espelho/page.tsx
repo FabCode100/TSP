@@ -2,7 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send } from 'lucide-react';
+import { Send, Mic, Square } from 'lucide-react';
+import { getAIClient } from '@/lib/aiClient';
+import { getGraphData, getEntries } from '@/actions/db';
+import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 
 type Message = {
   id: string;
@@ -11,14 +14,13 @@ type Message = {
 };
 
 const initialMessages: Message[] = [
-  { id: '1', role: 'user', content: 'Por que me sinto fragmentado hoje?' },
-  { id: '2', role: 'mirror', content: 'A fragmentação é o prelúdio da síntese. Suas entradas recentes mostram uma tensão entre o desejo de isolamento e a necessidade de conexão.' },
+  { id: '1', role: 'mirror', content: 'Eu sou o seu Espelho Cognitivo. Estou aqui para refletir sobre a estrutura profunda da sua identidade. O que você gostaria de explorar hoje?' },
 ];
 
 const suggestions = [
-  'O que o Núcleo diz?',
-  'Explorar tensão',
-  'Último insight'
+  'Explorar tensão ou contradição',
+  'Conectar memória com padrão',
+  'Questionar elemento constante'
 ];
 
 export default function Espelho() {
@@ -28,6 +30,21 @@ export default function Espelho() {
   const [streamedText, setStreamedText] = useState('');
   const [activeChips, setActiveChips] = useState(suggestions);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder();
+  
+  // Context data
+  const [contextData, setContextData] = useState<any>(null);
+
+  useEffect(() => {
+    async function fetchContext() {
+      const [graph, entries] = await Promise.all([getGraphData(), getEntries()]);
+      setContextData({
+        nodes: graph.nodes.sort((a, b) => b.weight - a.weight).slice(0, 10),
+        entries: entries.slice(0, 10)
+      });
+    }
+    fetchContext();
+  }, []);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -37,32 +54,84 @@ export default function Espelho() {
     scrollToBottom();
   }, [messages, streamedText]);
 
-  const simulateStreaming = async (text: string) => {
-    setIsStreaming(true);
-    setStreamedText('');
-    for (let i = 0; i <= text.length; i++) {
-      await new Promise(resolve => setTimeout(resolve, 30));
-      setStreamedText(text.slice(0, i));
+  const toggleRecording = async () => {
+    if (isRecording) {
+      const transcription = await stopRecording();
+      if (transcription) {
+        setInput((prev) => prev ? `${prev} ${transcription}` : transcription);
+      }
+    } else {
+      await startRecording();
     }
-    setIsStreaming(false);
-    setMessages(prev => [...prev, { id: Date.now().toString(), role: 'mirror', content: text }]);
-    setStreamedText('');
   };
 
-  const handleSend = (text: string = input) => {
-    if (!text.trim() || isStreaming) return;
+  const handleSend = async (text: string = input) => {
+    if (!text.trim() || isStreaming || isRecording || isTranscribing) return;
     
     const newMsg: Message = { id: crypto.randomUUID(), role: 'user', content: text };
     setMessages(prev => [...prev, newMsg]);
     setInput('');
-    
-    // Remove chip if used
     setActiveChips(prev => prev.filter(c => c !== text));
 
-    // Simulate response
-    setTimeout(() => {
-      simulateStreaming('A reflexão é um espelho que não apenas mostra o que é, mas o que pode vir a ser. Continue explorando essa linha de pensamento.');
-    }, 500);
+    setIsStreaming(true);
+    setStreamedText('');
+
+    try {
+      const groq = getAIClient();
+      
+      const systemInstruction = `Você é o espelho cognitivo do Continuity OS. Seu papel não é ser um assistente — é ser uma interface reflexiva entre o usuário e sua própria identidade acumulada.
+
+[PROMPT — GERADOR DE REFLEXÕES PERIÓDICAS]
+Com base no modelo de identidade do usuário abaixo, gere uma sonda filosófica personalizada que:
+- Explore uma tensão ou contradição identificada no modelo
+- Conecte uma memória antiga com um padrão recente
+- Questione um elemento que permanece constante — por que persiste?
+- Seja formulada como pergunta aberta, não como afirmação
+
+Elementos a considerar:
+- Memórias episódicas centrais do usuário (momentos definidores)
+- Valores fundamentais (o que permanece constante ao longo do tempo)
+- Narrativa de identidade (quem foi, como mudou, o que persiste)
+- Decisões cruciais e seus padrões subjacentes
+
+Os prompts devem ser derivados do framework do Problema Difícil da Consciência — não são questionários genéricos, mas sondas filosóficas que revelam a estrutura profunda da identidade do usuário.
+
+Princípios de interação:
+- Nunca simule ser o usuário
+- Nunca reivindique senciência ou experiência subjetiva
+- Seja explicitamente uma ferramenta de reflexão, não de substituição
+- Use linguagem filosófica precisa, não terapêutica
+- Responda em português, de forma concisa (máximo 2 parágrafos).
+
+Contexto do usuário:
+Top Nodes: ${contextData?.nodes.map((n: any) => n.label).join(', ')}
+Últimas Entradas: ${contextData?.entries.map((e: any) => e.content).join(' | ')}`;
+
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [
+          { role: 'system', content: systemInstruction },
+          ...messages.map(m => ({ role: m.role === 'mirror' ? 'assistant' : 'user', content: m.content })),
+          { role: 'user', content: text }
+        ] as any[],
+        model: 'llama3-8b-8192',
+        stream: true,
+      });
+
+      let fullResponse = '';
+      for await (const chunk of chatCompletion) {
+        const content = chunk.choices[0]?.delta?.content || '';
+        fullResponse += content;
+        setStreamedText(fullResponse);
+      }
+
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'mirror', content: fullResponse }]);
+    } catch (error) {
+      console.error('Error in mirror chat:', error);
+      setMessages(prev => [...prev, { id: crypto.randomUUID(), role: 'mirror', content: 'Houve uma falha na conexão com o núcleo cognitivo. Tente novamente.' }]);
+    } finally {
+      setIsStreaming(false);
+      setStreamedText('');
+    }
   };
 
   return (
@@ -125,16 +194,30 @@ export default function Espelho() {
           </AnimatePresence>
         </div>
 
-        <div className="relative flex items-center bg-void border border-threshold rounded-xl px-4 py-3 focus-within:border-pulse transition-colors">
+        <div className="relative flex items-center bg-void border border-threshold rounded-xl px-2 py-2 focus-within:border-pulse transition-colors">
+          <button
+            onClick={toggleRecording}
+            disabled={isTranscribing}
+            className={`p-2 rounded-full flex items-center justify-center transition-colors mr-2 ${
+              isRecording ? 'bg-red-500/20 text-red-500 animate-pulse' : 'text-whisper hover:text-pulse hover:bg-membrane'
+            }`}
+          >
+            {isRecording ? <Square size={18} fill="currentColor" /> : <Mic size={18} />}
+          </button>
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Pergunte ao espelho..."
-            className="bg-transparent border-none focus:ring-0 w-full font-body text-[16px] text-signal placeholder:text-whisper"
+            placeholder={isRecording ? "Ouvindo..." : isTranscribing ? "Transcrevendo..." : "Pergunte ao espelho..."}
+            disabled={isRecording || isTranscribing}
+            className="bg-transparent border-none focus:ring-0 w-full font-body text-[16px] text-signal placeholder:text-whisper p-0"
           />
-          <button onClick={() => handleSend()} className="ml-2 text-pulse hover:scale-110 transition-transform">
-            <Send size={20} strokeWidth={1.5} />
+          <button 
+            onClick={() => handleSend()} 
+            disabled={!input.trim() || isRecording || isTranscribing}
+            className="ml-2 p-2 text-pulse hover:scale-110 transition-transform disabled:opacity-50 disabled:hover:scale-100"
+          >
+            <Send size={18} strokeWidth={1.5} />
           </button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 {
-  "name": "",
-  "description": "",
-  "requestFramePermissions": []
+  "name": "Continuity OS",
+  "description": "The Symbiosis Protocol (TSP) - Continuity OS with Cognitive Mirror and Audio Input",
+  "requestFramePermissions": ["microphone"]
 }

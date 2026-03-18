@@ -3,38 +3,57 @@
 import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { motion, AnimatePresence } from 'motion/react';
+import { getGraphData } from '@/actions/db';
 
 type Node = d3.SimulationNodeDatum & {
   id: string;
   group: number;
   radius: number;
   frequency: number;
+  label: string;
 };
 
 type Link = d3.SimulationLinkDatum<Node> & {
-  source: string;
-  target: string;
+  source: string | Node;
+  target: string | Node;
   value: number;
 };
-
-const mockNodes: Node[] = Array.from({ length: 20 }, (_, i) => ({
-  id: `node${i}`,
-  group: Math.floor(Math.random() * 3),
-  radius: 8 + Math.random() * 24,
-  frequency: Math.random(),
-}));
-
-const mockLinks: Link[] = Array.from({ length: 35 }, () => ({
-  source: `node${Math.floor(Math.random() * 20)}`,
-  target: `node${Math.floor(Math.random() * 20)}`,
-  value: Math.random(),
-}));
 
 export default function Nucleo() {
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [graphData, setGraphData] = useState<{nodes: Node[], links: Link[]}>({ nodes: [], links: [] });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    async function fetchData() {
+      const data = await getGraphData();
+      
+      const maxWeight = Math.max(...data.nodes.map(n => n.weight), 1);
+      
+      const nodes: Node[] = data.nodes.map(n => ({
+        id: n.id,
+        label: n.label,
+        group: n.type === 'conceito' ? 0 : n.type === 'emocao' ? 1 : 2,
+        radius: 8 + (n.weight / maxWeight) * 24,
+        frequency: n.weight / maxWeight,
+      }));
+
+      const links: Link[] = data.edges.map(e => ({
+        source: e.sourceId,
+        target: e.targetId,
+        value: e.strength,
+      }));
+
+      setGraphData({ nodes, links });
+      setLoading(false);
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (loading || graphData.nodes.length === 0) return;
+
     const svgElement = svgRef.current;
     if (!svgElement) return;
 
@@ -51,15 +70,15 @@ export default function Nucleo() {
 
     const g = svg;
 
-    const simulation = d3.forceSimulation<Node>(mockNodes)
-      .force('link', d3.forceLink<Node, Link>(mockLinks).id(d => d.id).distance(100))
+    const simulation = d3.forceSimulation<Node>(graphData.nodes)
+      .force('link', d3.forceLink<Node, Link>(graphData.links).id(d => d.id).distance(100))
       .force('charge', d3.forceManyBody().strength(-200))
       .force('center', d3.forceCenter(width / 2, height / 2))
       .force('collision', d3.forceCollide().radius(d => (d as Node).radius + 10));
 
     const link = g.append('g')
       .selectAll('path')
-      .data(mockLinks)
+      .data(graphData.links)
       .join('path')
       .attr('stroke', 'var(--pulse)')
       .attr('stroke-opacity', d => 0.2 + d.value * 0.4)
@@ -72,7 +91,7 @@ export default function Nucleo() {
 
     const node = g.append('g')
       .selectAll('circle')
-      .data(mockNodes)
+      .data(graphData.nodes)
       .join('circle')
       .attr('r', d => d.radius)
       .attr('fill', d => colorScale(d.frequency))
@@ -102,6 +121,18 @@ export default function Nucleo() {
           .remove();
       });
 
+    // Add labels
+    const labels = g.append('g')
+      .selectAll('text')
+      .data(graphData.nodes)
+      .join('text')
+      .text(d => d.label)
+      .attr('font-size', '10px')
+      .attr('fill', 'var(--signal)')
+      .attr('text-anchor', 'middle')
+      .attr('dy', d => d.radius + 12)
+      .attr('pointer-events', 'none');
+
     // Breathing animation
     d3.timer((elapsed) => {
       node.attr('r', d => d.radius + Math.sin(elapsed / 636 + d.index!) * 2);
@@ -118,6 +149,10 @@ export default function Nucleo() {
       node
         .attr('cx', d => d.x!)
         .attr('cy', d => d.y!);
+        
+      labels
+        .attr('x', d => d.x!)
+        .attr('y', d => d.y!);
     });
 
     function dragstarted(event: any) {
@@ -143,7 +178,7 @@ export default function Nucleo() {
         d3.select(svgElement).selectAll('*').remove();
       }
     };
-  }, []);
+  }, [graphData, loading]);
 
   return (
     <div className="h-full w-full bg-void relative overflow-hidden">

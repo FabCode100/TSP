@@ -2,11 +2,14 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { useState, useEffect, useRef } from 'react';
+import { Mic, Square } from 'lucide-react';
+import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 
 export function FABSheet({ isOpen, onClose, onSave }: { isOpen: boolean; onClose: () => void; onSave: (text: string, type: string) => void }) {
   const [text, setText] = useState('');
   const [type, setType] = useState('MOMENTO');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder();
 
   useEffect(() => {
     if (isOpen) {
@@ -24,6 +27,17 @@ export function FABSheet({ isOpen, onClose, onSave }: { isOpen: boolean; onClose
     if (text.trim()) {
       onSave(text, type);
       handleClose();
+    }
+  };
+
+  const toggleRecording = async () => {
+    if (isRecording) {
+      const transcription = await stopRecording();
+      if (transcription) {
+        setText((prev) => prev ? `${prev} ${transcription}` : transcription);
+      }
+    } else {
+      await startRecording();
     }
   };
 
@@ -68,14 +82,24 @@ export function FABSheet({ isOpen, onClose, onSave }: { isOpen: boolean; onClose
                 ref={textareaRef}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="O que está acontecendo agora?"
+                placeholder={isRecording ? "Ouvindo..." : isTranscribing ? "Transcrevendo..." : "O que está acontecendo agora?"}
+                disabled={isRecording || isTranscribing}
                 className="flex-1 bg-transparent border-none resize-none focus:ring-0 text-body text-[18px] text-signal placeholder:text-whisper/50"
               />
               
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-between items-center mt-4">
+                <button
+                  onClick={toggleRecording}
+                  disabled={isTranscribing}
+                  className={`p-3 rounded-full flex items-center justify-center transition-colors ${
+                    isRecording ? 'bg-red-500/20 text-red-500 animate-pulse' : 'bg-membrane text-whisper hover:text-pulse'
+                  }`}
+                >
+                  {isRecording ? <Square size={20} fill="currentColor" /> : <Mic size={20} />}
+                </button>
                 <button
                   onClick={handleSave}
-                  disabled={!text.trim()}
+                  disabled={!text.trim() || isRecording || isTranscribing}
                   className="bg-pulse text-void px-6 py-3 rounded-full font-interface text-[14px] disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Salvar

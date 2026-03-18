@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          String      @id @default(cuid())
+  email       String      @unique
+  password    String
+  createdAt   DateTime    @default(now())
+  onboarding  String?     // respostas do onboarding armazenadas (JSON stringified)
+  entries     Entry[]
+  nodes       GraphNode[]
+  edges       GraphEdge[]
+  patterns    Pattern[]
+  sessions    Session[]
+}
+
+model Entry {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   // "momento" | "reflexao" | "decisao" | "espelho"
+  content     String
+  pinned      Boolean  @default(false)
+  archived    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags        Tag[]    @relation("EntryTags")
+}
+
+model GraphNode {
+  id          String      @id @default(cuid())
+  userId      String
+  label       String
+  type        String      // "conceito" | "emocao" | "pessoa" | "evento"
+  weight      Float       @default(1.0)   // frequência = centralidade
+  x           Float?
+  y           Float?
+  createdAt   DateTime    @default(now())
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceEdges GraphEdge[] @relation("source")
+  targetEdges GraphEdge[] @relation("target")
+
+  @@unique([userId, label]) // Evita duplicatas de label por usuário
+}
+
+model GraphEdge {
+  id          String    @id @default(cuid())
+  userId      String
+  sourceId    String
+  targetId    String
+  strength    Float     @default(0.5)
+  createdAt   DateTime  @default(now())
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  source      GraphNode @relation("source", fields: [sourceId], references: [id], onDelete: Cascade)
+  target      GraphNode @relation("target", fields: [targetId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceId, targetId])
+}
+
+model Pattern {
+  id           String   @id @default(cuid())
+  userId       String
+  type         String   // "nucleo" | "tensao" | "marco"
+  title        String
+  description  String
+  relatedNodes String   // array de node IDs (JSON stringified)
+  detectedAt   DateTime @default(now())
+  seen         Boolean  @default(false)
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, title])
+}
+
+model Session {
+  id          String   @id @default(cuid())
+  userId      String
+  token       String   @unique
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Tag {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  entries Entry[] @relation("EntryTags")
+}

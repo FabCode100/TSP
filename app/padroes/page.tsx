@@ -1,15 +1,33 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { Network, Activity, Clock } from 'lucide-react';
+import { getPatterns, getGraphData } from '@/actions/db';
 
 export default function Padroes() {
+  const [patterns, setPatterns] = useState<any[]>([]);
+  const [nodeCount, setNodeCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchData() {
+      const [p, g] = await Promise.all([getPatterns(), getGraphData()]);
+      setPatterns(p);
+      setNodeCount(g.nodes.length);
+    }
+    fetchData();
+  }, []);
+
+  const nucleo = patterns.find(p => p.type === 'nucleo');
+  const tensoes = patterns.filter(p => p.type === 'tensao');
+  const marcos = patterns.filter(p => p.type === 'marco');
+
   return (
     <div className="min-h-full w-full bg-void flex flex-col relative pb-32">
       <header className="sticky top-0 z-10 bg-void/80 backdrop-blur-md px-6 pt-12 pb-4 border-b border-threshold">
         <h1 className="font-display text-[28px] text-signal leading-none">Padrões</h1>
         <div className="font-interface text-[11px] text-whisper mt-1 uppercase">
-          47 nodes · Núcleo identificado
+          {nodeCount} nodes · Núcleo identificado
         </div>
       </header>
 
@@ -34,7 +52,7 @@ export default function Padroes() {
             </div>
 
             <p className="font-body text-[18px] text-signal leading-relaxed">
-              Sua identidade atual orbita a necessidade de criar estrutura no caos. Há uma busca constante por significado nas pequenas interações.
+              {nucleo ? nucleo.description : 'Ainda coletando dados suficientes para identificar seu núcleo de identidade...'}
             </p>
           </div>
         </section>
@@ -47,16 +65,15 @@ export default function Padroes() {
           </div>
           
           <div className="flex flex-col gap-4">
-            {[
-              ['Desejo de isolamento', 'Necessidade de conexão'],
-              ['Criação impulsiva', 'Perfeccionismo paralisante']
-            ].map((tension, idx) => (
+            {tensoes.length > 0 ? tensoes.map((tension, idx) => (
               <div key={idx} className="flex items-center justify-between p-4 rounded-[16px] bg-membrane/20 border border-threshold">
-                <span className="font-body text-[16px] text-signal/80 flex-1 text-right">{tension[0]}</span>
-                <span className="font-display text-[20px] text-synapse mx-4">↔</span>
-                <span className="font-body text-[16px] text-signal/80 flex-1 text-left">{tension[1]}</span>
+                <span className="font-body text-[16px] text-signal/80 flex-1 text-center">{tension.title}</span>
               </div>
-            ))}
+            )) : (
+              <div className="p-4 rounded-[16px] bg-membrane/20 border border-threshold text-center text-whisper font-body">
+                Nenhuma tensão ativa identificada.
+              </div>
+            )}
           </div>
         </section>
 
@@ -71,21 +88,22 @@ export default function Padroes() {
             <div className="flex gap-8 min-w-max px-2">
               <div className="absolute top-3 left-0 right-0 h-[1px] bg-threshold" />
               
-              {[
-                { date: '12 OUT', title: 'Ruptura', desc: 'Primeiro registro de exaustão' },
-                { date: '15 OUT', title: 'Silêncio', desc: 'Pausa nas interações sociais' },
-                { date: '20 OUT', title: 'Retorno', desc: 'Nova perspectiva criativa' },
-                { date: '24 OUT', title: 'Síntese', desc: 'Integração das tensões' }
-              ].map((marco, idx) => (
+              {marcos.length > 0 ? marcos.map((marco, idx) => (
                 <div key={idx} className="relative flex flex-col items-center w-32">
                   <div className="w-6 h-6 rounded-full bg-void border-2 border-emergence flex items-center justify-center z-10 mb-4">
                     <div className="w-2 h-2 rounded-full bg-emergence" />
                   </div>
-                  <span className="font-interface text-[10px] text-whisper mb-2">{marco.date}</span>
+                  <span className="font-interface text-[10px] text-whisper mb-2">
+                    {new Date(marco.detectedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).toUpperCase()}
+                  </span>
                   <span className="font-display text-[16px] text-signal mb-1">{marco.title}</span>
-                  <span className="font-body text-[14px] text-signal/60 text-center leading-tight">{marco.desc}</span>
+                  <span className="font-body text-[14px] text-signal/60 text-center leading-tight">{marco.description}</span>
                 </div>
-              ))}
+              )) : (
+                <div className="text-whisper font-body text-center w-full">
+                  Nenhum marco identificado ainda.
+                </div>
+              )}
             </div>
           </div>
         </section>

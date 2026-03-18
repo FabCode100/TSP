@@ -5,20 +5,35 @@ import { BottomTabBar } from './BottomTabBar';
 import { FABSheet } from './FABSheet';
 import { usePathname } from 'next/navigation';
 import { AppProvider, useAppContext } from './AppContext';
+import { extractIdentityGraph, extractPatterns } from '@/lib/aiClient';
+import { updateGraph, savePatterns, getEntries, getGraphData } from '@/actions/db';
 
 function AppContent({ children }: { children: React.ReactNode }) {
   const [isFABOpen, setIsFABOpen] = useState(false);
   const pathname = usePathname();
   const { addEntry } = useAppContext();
 
-  const handleSave = (text: string, type: string) => {
-    setTimeout(() => {
-      addEntry({
-        type: type as any,
-        content: text,
-        isInsight: type === 'REFLEXÃO'
-      });
-    }, 2000);
+  const handleSave = async (text: string, type: string) => {
+    await addEntry({
+      type: type,
+      content: text,
+    });
+    
+    // Process in background
+    extractIdentityGraph(text).then(async (graphData) => {
+      if (graphData.concepts.length > 0) {
+        await updateGraph(graphData.concepts, graphData.edges);
+        
+        // After updating graph, check if we should extract patterns
+        const [entries, currentGraph] = await Promise.all([getEntries(), getGraphData()]);
+        if (entries.length % 3 === 0) { // Extract patterns every 3 entries
+          const patterns = await extractPatterns(entries.slice(0, 10), currentGraph.nodes.slice(0, 10));
+          if (patterns.length > 0) {
+            await savePatterns(patterns);
+          }
+        }
+      }
+    }).catch(console.error);
   };
 
   return (

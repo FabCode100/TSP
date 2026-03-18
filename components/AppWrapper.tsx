@@ -38,7 +38,7 @@ function AppContent({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      <div className={`h-full w-full overflow-y-auto ${pathname !== '/onboarding' ? 'pb-[calc(60px+env(safe-area-inset-bottom,34px))]' : ''}`}>
+      <div className={`h-full w-full overflow-y-auto ${pathname !== '/onboarding' && pathname !== '/login' ? 'pb-[calc(60px+env(safe-area-inset-bottom,34px))]' : ''}`}>
         {children}
       </div>
       <BottomTabBar onFabClick={() => setIsFABOpen(true)} />

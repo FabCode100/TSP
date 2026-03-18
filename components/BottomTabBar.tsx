@@ -8,7 +8,7 @@ export function BottomTabBar({ onFabClick }: { onFabClick: () => void }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  if (pathname === '/onboarding') return null;
+  if (pathname === '/onboarding' || pathname === '/login') return null;
 
   return (
     <div className="absolute bottom-0 left-0 right-0 h-[60px] pb-[env(safe-area-inset-bottom,34px)] bg-membrane/80 backdrop-blur-md z-40 flex items-center justify-around px-4">

@@ -10,12 +10,14 @@ const MOCK_PASS = 'tsp_secure_agent_2026';
 // MVP: Auto-login/register strategy
 async function getAuthToken() {
   if (typeof window === 'undefined') return '';
-  let token = localStorage.getItem('tsp_token');
+  const token = localStorage.getItem('tsp_token');
   if (token) return token;
+  return '';
+}
 
-  console.log('[Auth] No token found. Attempting to login/register mock user:', MOCK_EMAIL);
+export async function loginWithGoogleMock() {
+  console.log('[Auth] Attempting to login/register mock user (simulated Google OAuth):', MOCK_EMAIL);
 
-  // Try to login mock user
   try {
     const loginRes = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
@@ -25,17 +27,14 @@ async function getAuthToken() {
     
     if (loginRes.ok) {
       const data = await loginRes.json();
-      token = data.data.token;
+      const token = data.data.token;
       if (token) {
         localStorage.setItem('tsp_token', token);
-        console.log('[Auth] Login successful.');
         return token;
       }
-    } else {
-      console.warn('[Auth] Login failed (status ' + loginRes.status + '). Trying registration...');
     }
 
-    // If login fails, try register
+    // Fallback to register
     const regRes = await fetch(`${API_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -44,20 +43,16 @@ async function getAuthToken() {
     
     if (regRes.ok) {
       const data = await regRes.json();
-      token = data.data.token;
+      const token = data.data.token;
       if (token) {
         localStorage.setItem('tsp_token', token);
-        console.log('[Auth] Registration successful.');
         return token;
       }
-    } else {
-      const errorData = await regRes.json();
-      console.error('[Auth] Registration failed:', errorData);
     }
   } catch (e) {
-    console.warn('[Auth] Backend connection failed. Is Fastify running on 3001?', e);
+    console.warn('[Auth] Backend connection failed.', e);
   }
-  return '';
+  return null;
 }
 
 async function fetchAPI(endpoint: string, options: RequestInit = {}): Promise<any> {

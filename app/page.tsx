@@ -9,7 +9,9 @@ export default function Home() {
 
   useEffect(() => {
     getOrCreateUser().then(user => {
-      if (user.onboarding) {
+      if (user.id === 'guest') {
+        router.push('/login');
+      } else if (user.onboarding) {
         router.push('/pulso');
       } else {
         router.push('/onboarding');

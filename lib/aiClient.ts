@@ -72,14 +72,26 @@ ${entries.map(e => e.content).join('\n---\n')}
 Conceitos Frequentes:
 ${nodes.map(n => n.label).join(', ')}
 
-Identifique até 3 padrões e retorne APENAS JSON válido no formato:
+Identifique exatamente 1 "nucleo", 1 "tensao" e 1 "marco" e retorne APENAS JSON válido no formato:
 {
   "patterns": [
     {
-      "type": "String", // "nucleo" | "tensao" | "marco"
+      "type": "nucleo",
       "title": "String",
       "description": "String",
-      "relatedNodes": ["String"] // labels dos nodes relacionados
+      "relatedNodes": ["String"]
+    },
+    {
+      "type": "tensao",
+      "title": "String",
+      "description": "String",
+      "relatedNodes": ["String"]
+    },
+    {
+      "type": "marco",
+      "title": "String",
+      "description": "String",
+      "relatedNodes": ["String"]
     }
   ]
 }`;

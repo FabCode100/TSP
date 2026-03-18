@@ -46,6 +46,19 @@ export async function saveOnboarding(answers: string[]) {
       }
     }
   }
+
+  // After onboarding, extract initial patterns
+  try {
+    const entries = await getEntries();
+    const graph = await getGraphData();
+    const { extractPatterns } = await import('@/lib/aiClient');
+    const patterns = await extractPatterns(entries.slice(0, 10), graph.nodes.slice(0, 10));
+    if (patterns.length > 0) {
+      await savePatterns(patterns);
+    }
+  } catch (e) {
+    console.error('Failed to extract initial patterns:', e);
+  }
 }
 
 export async function getEntries() {
@@ -86,8 +99,11 @@ export async function updateGraph(newNodes: any[], newEdges: any[]) {
   
   // Very simplified graph update for MVP
   for (const n of newNodes) {
+    const label = n.label?.toLowerCase().trim();
+    if (!label) continue;
+
     const existing = await prisma.graphNode.findFirst({
-      where: { userId: user.id, label: n.label }
+      where: { userId: user.id, label }
     });
     if (existing) {
       await prisma.graphNode.update({
@@ -98,7 +114,7 @@ export async function updateGraph(newNodes: any[], newEdges: any[]) {
       await prisma.graphNode.create({
         data: {
           userId: user.id,
-          label: n.label,
+          label,
           type: n.type || 'conceito',
           weight: 1.0
         }
@@ -112,8 +128,10 @@ export async function updateGraph(newNodes: any[], newEdges: any[]) {
   const nodeMap = new Map(allNodes.map(n => [n.label, n.id]));
 
   for (const e of newEdges) {
-    const sourceId = nodeMap.get(e.sourceLabel);
-    const targetId = nodeMap.get(e.targetLabel);
+    const sourceLabel = e.sourceLabel?.toLowerCase().trim();
+    const targetLabel = e.targetLabel?.toLowerCase().trim();
+    const sourceId = nodeMap.get(sourceLabel);
+    const targetId = nodeMap.get(targetLabel);
     if (sourceId && targetId && sourceId !== targetId) {
       const [id1, id2] = [sourceId, targetId].sort();
       const existingEdge = await prisma.graphEdge.findFirst({

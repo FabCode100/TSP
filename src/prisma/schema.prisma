@@ -8,56 +8,56 @@ datasource db {
 }
 
 model User {
-  id          String      @id @default(cuid())
-  email       String      @unique
-  password    String
-  createdAt   DateTime    @default(now())
-  onboarding  String?     // respostas do onboarding armazenadas (JSON stringified)
-  entries     Entry[]
-  nodes       GraphNode[]
-  edges       GraphEdge[]
-  patterns    Pattern[]
-  sessions    Session[]
+  id         String      @id @default(cuid())
+  email      String      @unique
+  password   String
+  createdAt  DateTime    @default(now())
+  onboarding String?
+  entries    Entry[]
+  edges      GraphEdge[]
+  nodes      GraphNode[]
+  patterns   Pattern[]
+  sessions   Session[]
 }
 
 model Entry {
-  id          String   @id @default(cuid())
-  userId      String
-  type        String   // "momento" | "reflexao" | "decisao" | "espelho"
-  content     String
-  pinned      Boolean  @default(false)
-  archived    Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tags        Tag[]    @relation("EntryTags")
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  content   String
+  pinned    Boolean  @default(false)
+  archived  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tags      Tag[]    @relation("EntryTags")
 }
 
 model GraphNode {
   id          String      @id @default(cuid())
   userId      String
   label       String
-  type        String      // "conceito" | "emocao" | "pessoa" | "evento"
-  weight      Float       @default(1.0)   // frequência = centralidade
+  type        String
+  weight      Float       @default(1.0)
   x           Float?
   y           Float?
   createdAt   DateTime    @default(now())
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sourceEdges GraphEdge[] @relation("source")
   targetEdges GraphEdge[] @relation("target")
+  sourceEdges GraphEdge[] @relation("source")
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([userId, label]) // Evita duplicatas de label por usuário
+  @@unique([userId, label])
 }
 
 model GraphEdge {
-  id          String    @id @default(cuid())
-  userId      String
-  sourceId    String
-  targetId    String
-  strength    Float     @default(0.5)
-  createdAt   DateTime  @default(now())
-  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  source      GraphNode @relation("source", fields: [sourceId], references: [id], onDelete: Cascade)
-  target      GraphNode @relation("target", fields: [targetId], references: [id], onDelete: Cascade)
+  id        String    @id @default(cuid())
+  userId    String
+  sourceId  String
+  targetId  String
+  strength  Float     @default(0.5)
+  createdAt DateTime  @default(now())
+  target    GraphNode @relation("target", fields: [targetId], references: [id], onDelete: Cascade)
+  source    GraphNode @relation("source", fields: [sourceId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([sourceId, targetId])
 }
@@ -65,10 +65,10 @@ model GraphEdge {
 model Pattern {
   id           String   @id @default(cuid())
   userId       String
-  type         String   // "nucleo" | "tensao" | "marco"
+  type         String
   title        String
   description  String
-  relatedNodes String   // array de node IDs (JSON stringified)
+  relatedNodes String
   detectedAt   DateTime @default(now())
   seen         Boolean  @default(false)
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -77,12 +77,12 @@ model Pattern {
 }
 
 model Session {
-  id          String   @id @default(cuid())
-  userId      String
-  token       String   @unique
-  expiresAt   DateTime
-  createdAt   DateTime @default(now())
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Tag {

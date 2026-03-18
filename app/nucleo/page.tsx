@@ -204,7 +204,7 @@ export default function Nucleo() {
               className="absolute bottom-0 left-0 right-0 bg-membrane rounded-t-[24px] p-6 z-30 pb-[calc(24px+env(safe-area-inset-bottom,34px))]"
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="font-display text-[24px] text-signal">Conceito: {selectedNode.id}</h3>
+                <h3 className="font-display text-[24px] text-signal capitalize">Conceito: {selectedNode.label}</h3>
                 <button onClick={() => setSelectedNode(null)} className="text-whisper">✕</button>
               </div>
               <p className="font-body text-[18px] text-signal/80 leading-relaxed">

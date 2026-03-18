@@ -1,8 +1,8 @@
 <div align="center">
-<img width="1200" height="475" alt="The Symbiosis Protocol Banner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+<img width="200" height="200" alt="TSP Logo" src="./public/icon-512.png" />
 
 # The Symbiosis Protocol (TSP)
-### An Expanded Cognitive Identity Platform
+### An Expanded Cognitive Identity Platform (Mobile Ready)
 </div>
 
 ---
@@ -20,7 +20,7 @@ The foundation layer. A personal operating system that captures memories, reflec
 - **Continuity Graph**: A dynamic visual representation of your evolving self.
 - **Reflective Interface**: Dialogue with your own accumulated consciousness pattern.
 
-### 2. Emergent Twin (Roadmap)
+### 2. Emergent Twin (Active)
 The operational extension. A personal AI twin that projects your cognitive patterns into the world.
 - **Multi-Level Access**: Public (Social), Trusted (Professional), and Intimate (Personal).
 - **Cognitive Mirroring**: Responses aligned with your vocabulary, style, and values.
@@ -43,6 +43,7 @@ The horizon of human-AI integration.
 - **AI Engines**: 
   - **Google Gemini 3.1 Pro/Flash**: Focused on structured graph extraction and pattern analysis.
   - **Groq (Llama 3/Whisper)**: Rapid semantic processing and audio transcription.
+- **Mobile Integration**: Capacitor + GitHub Actions (Automated APK Generation).
 - **Data Visualization**: D3.js for interactive identity graphs.
 
 ### Project Structure

@@ -168,3 +168,43 @@ export async function getPatterns() {
 export async function savePatterns(patterns: any[]) {
   console.log('[API] Patterns update requested (client), but handled by Fastify backend via analyzer.');
 }
+
+export async function getTwinProfile() {
+  return await fetchAPI('/twin/profile');
+}
+
+export async function* sendTwinMessage(message: string) {
+  const token = await getAuthToken();
+  const response = await fetch(`${API_URL}/twin/chat`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify({ message })
+  });
+
+  if (!response.ok) throw new Error('Failed to connect to Twin');
+  
+  const reader = response.body?.getReader();
+  if (!reader) return;
+
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    
+    const chunk = decoder.decode(value);
+    const lines = chunk.split('\n');
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const dataStr = line.replace('data: ', '').trim();
+        if (dataStr === '[DONE]') return;
+        try {
+          const { content } = JSON.parse(dataStr);
+          if (content) yield content;
+        } catch (e) {}
+      }
+    }
+  }
+}

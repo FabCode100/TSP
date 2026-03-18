@@ -26,6 +26,7 @@ function buildApp(opts = {}) {
   app.register(graphRoutes, { prefix: '/graph' });
   app.register(mirrorRoutes, { prefix: '/mirror' });
   app.register(patternsRoutes, { prefix: '/patterns' });
+  app.register(twinRoutes, { prefix: '/twin' });
 
   // Health check
   app.get('/health', async () => {

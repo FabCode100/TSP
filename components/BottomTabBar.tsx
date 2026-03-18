@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Activity, Circle, CircleDashed, Menu, Plus } from 'lucide-react';
+import { Activity, Circle, CircleDashed, Menu, Plus, Sparkles } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 
 export function BottomTabBar({ onFabClick }: { onFabClick: () => void }) {
@@ -38,6 +38,11 @@ export function BottomTabBar({ onFabClick }: { onFabClick: () => void }) {
           <div className="absolute w-2 h-2 rounded-full bg-current top-1 right-1" />
         </div>
       </button>
+
+      <button onClick={() => router.push('/emergente')} className={`p-2 transition-colors ${pathname === '/emergente' ? 'text-pulse' : 'text-whisper'}`}>
+        <Sparkles size={24} strokeWidth={1.5} />
+      </button>
+
       <button onClick={() => router.push('/padroes')} className={`p-2 transition-colors ${pathname === '/padroes' ? 'text-pulse' : 'text-whisper'}`}>
         <Menu size={24} strokeWidth={1.5} />
       </button>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Continuity OS Login</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,typography,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#006EFF",
+                        "background-light": "#FAFAFA",
+                        "background-dark": "#050508",
+                        surface: {
+                            light: "#FFFFFF",
+                            dark: "#121217"
+                        },
+                        text1: {
+                            light: "#1A1A1A",
+                            dark: "#EAEAEA"
+                        },
+                        text2: {
+                            light: "#666666",
+                            dark: "#A3A3A3"
+                        },
+                        text3: {
+                            light: "#999999",
+                            dark: "#737373"
+                        },
+                        accent: {
+                            light: "#006EFF",
+                            dark: "#00C8FF"
+                        }
+                    },
+                    fontFamily: {
+                        display: ["Cormorant Garamond", "serif"],
+                        sans: ["Inter", "sans-serif"],
+                    },
+                    borderRadius: {
+                        DEFAULT: "12px",
+                    },
+                    backgroundImage: {
+                        'particle-pattern': "radial-gradient(circle at center, rgba(0, 110, 255, 0.05) 0%, transparent 70%)"
+                    }
+                },
+            },
+        };
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&amp;family=Inter:ital,wght@0,300;0,400;0,500;1,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet"/>
+<style>
+        .bg-nodes {
+            background-color: #050508;
+            background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+            radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark text-text1-light dark:text-text1-dark font-sans h-screen flex flex-col pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)] bg-nodes relative overflow-hidden">
+<div class="absolute inset-0 bg-particle-pattern pointer-events-none"></div>
+<main class="flex-1 flex flex-col items-center justify-center px-6 relative z-10 w-full max-w-md mx-auto">
+<div class="mb-10 flex flex-col items-center">
+<div class="w-32 h-32 mb-6 rounded-3xl overflow-hidden flex items-center justify-center bg-surface-dark border border-white/5 shadow-[0_0_40px_rgba(0,110,255,0.15)]">
+<img alt="The Symbiosis Protocol Logo" class="w-full h-full object-cover opacity-90 object-center" src="https://lh3.googleusercontent.com/aida/ADBb0ug36v4G_bN1zpfBYHdHs2oZsjafXnJ9ilP8DHGInOHGpE6CUgavxtpZNgSVNXTjnw59yZNE5qzd0nuU8LOABBtbr1-9ZvJfaML_RA70UTAvYpf5D14uI5oGXHEMnqWDYa4lZKbGMzNlAQPhb0H3pyw6_Sh_4JhAIa7drj4scZSBHVhiQVql2daK_byV5qtyn0TtetW6TV8OSbzA0tKsVv7TZgOHHMMjcnJzQPjUBAlXfKOkzCQ9g0RyDbZ0I-mgPqsse8ZNKaykOe4"/>
+</div>
+<h1 class="font-display text-[32px] font-light tracking-wide text-text1-light dark:text-text1-dark mb-3 text-center">
+            Continuity OS
+        </h1>
+<p class="text-text3-light dark:text-text3-dark italic text-center text-sm px-4">
+            "Sua identidade, descentralizada e emergente."
+        </p>
+</div>
+<div class="w-full mt-8 space-y-6">
+<button class="w-full bg-surface-light dark:bg-surface-dark text-text1-light dark:text-text1-dark border border-gray-200 dark:border-white/10 rounded-full py-4 px-6 flex items-center justify-center space-x-3 hover:bg-gray-50 dark:hover:bg-white/5 transition-all duration-300 shadow-sm active:scale-[0.98]">
+<svg class="w-5 h-5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"></path>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
+</svg>
+<span class="font-medium">Continuar com Google</span>
+</button>
+</div>
+</main>
+<footer class="w-full px-8 pb-8 text-center relative z-10 mt-auto">
+<p class="text-xs text-text2-light dark:text-text2-dark leading-relaxed">
+        Ao entrar, você concorda com nossos 
+        <a class="text-primary dark:text-accent-dark hover:underline underline-offset-4 decoration-primary/30 dark:decoration-accent-dark/30 transition-all" href="#">Termos de Uso</a> 
+        e 
+        <a class="text-primary dark:text-accent-dark hover:underline underline-offset-4 decoration-primary/30 dark:decoration-accent-dark/30 transition-all" href="#">Política de Privacidade</a>.
+    </p>
+</footer>
+
+</body></html>

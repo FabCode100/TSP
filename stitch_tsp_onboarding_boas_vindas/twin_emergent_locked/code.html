@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&amp;family=DM+Mono:wght@300;400;500&amp;family=Instrument+Serif:ital@0;1&amp;family=Space+Grotesk:wght@300;400;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-container": "#4f319c",
+                        "surface-dim": "#131317",
+                        "on-primary-fixed-variant": "#14409e",
+                        "on-secondary-fixed-variant": "#4f319c",
+                        "surface": "#050508",
+                        "tertiary-fixed": "#e6e2d7",
+                        "tertiary": "#cac6bc",
+                        "surface-tint": "#b4c5ff",
+                        "outline-variant": "#444652",
+                        "on-tertiary": "#323129",
+                        "on-background": "#e5e1e7",
+                        "surface-container-high": "#2a292e",
+                        "outline": "#8e909e",
+                        "on-secondary": "#381385",
+                        "on-error": "#690005",
+                        "tertiary-fixed-dim": "#cac6bc",
+                        "on-tertiary-container": "#383730",
+                        "on-primary": "#002a78",
+                        "tertiary-container": "#a3a096",
+                        "on-surface": "#e8e4d9",
+                        "error-container": "#93000a",
+                        "inverse-primary": "#3559b7",
+                        "on-primary-container": "#003086",
+                        "surface-container-low": "#1b1b1f",
+                        "surface-bright": "#39393d",
+                        "secondary-fixed": "#e8ddff",
+                        "primary-container": "#7b9cff",
+                        "inverse-on-surface": "#303034",
+                        "secondary-fixed-dim": "#cebdff",
+                        "primary": "#7b9cff",
+                        "on-tertiary-fixed": "#1c1c15",
+                        "surface-container": "#131317",
+                        "error": "#ffb4ab",
+                        "on-secondary-fixed": "#21005e",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed": "#dbe1ff",
+                        "on-primary-fixed": "#00174b",
+                        "secondary": "#a78bfa",
+                        "on-tertiary-fixed-variant": "#48473f",
+                        "background": "#050508",
+                        "surface-variant": "#353439",
+                        "on-surface-variant": "#c4c6d4",
+                        "surface-container-lowest": "#0e0e12",
+                        "on-secondary-container": "#bea8ff",
+                        "inverse-surface": "#e5e1e7",
+                        "surface-container-highest": "#353439",
+                        "primary-fixed-dim": "#b4c5ff"
+                    },
+                    fontFamily: {
+                        "headline": ["Cormorant Garamond"],
+                        "body": ["Instrument Serif"],
+                        "label": ["DM Mono"]
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-void { background-color: #050508; }
+        .text-whisper { color: rgba(232, 228, 217, 0.4); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-void text-on-surface font-body selection:bg-primary/30 min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 py-4 w-full bg-[#050508] transition-opacity duration-300">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#7B9CFF]">menu</span>
+</div>
+<div class="flex flex-col items-center">
+<h1 class="text-[#E8E4D9] font-['Cormorant_Garamond'] text-xl lowercase tracking-tight">Emergent Twin</h1>
+<span class="font-['DM_Mono'] text-[10px] uppercase tracking-widest text-[#E8E4D9]/60">Protocol active</span>
+</div>
+<div class="flex items-center">
+<span class="material-symbols-outlined text-[#7B9CFF]">account_circle</span>
+</div>
+</header>
+<main class="flex-1 flex flex-col items-center justify-center px-8 pt-24 pb-32">
+<!-- Hero Section: Central Lock & Titles -->
+<section class="w-full max-w-md flex flex-col items-center text-center space-y-8">
+<div class="relative group">
+<!-- Asymmetric background glow -->
+<div class="absolute -inset-10 bg-primary/5 blur-[60px] rounded-full"></div>
+<!-- Twin FAB (Locked State) -->
+<div class="relative h-48 w-48 flex items-center justify-center rounded-full bg-surface-container opacity-40 border border-outline-variant/10 shadow-[0_0_50px_rgba(123,156,255,0.05)]">
+<span class="material-symbols-outlined text-6xl text-on-surface-variant/50" style="font-size: 48px;">lock</span>
+</div>
+</div>
+<div class="space-y-2">
+<h2 class="font-headline text-[28px] font-light text-on-surface leading-tight">Emergent Twin</h2>
+<p class="italic text-whisper text-sm">* Seu twin emerge com seu modelo *</p>
+</div>
+</section>
+<!-- Criteria Grid (Bento Style Lite) -->
+<section class="w-full max-w-md mt-16 space-y-6">
+<!-- Criterion 1: Incomplete -->
+<div class="bg-surface-container-low p-6 rounded-xl space-y-4 transition-all hover:bg-surface-container-highest/40">
+<div class="flex justify-between items-end">
+<span class="font-label text-xs uppercase tracking-widest text-on-surface-variant/60">Nodes no grafo</span>
+<span class="font-label text-sm text-on-surface-variant">12 / 30</span>
+</div>
+<div class="w-full h-[2px] bg-surface-variant overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary w-[40%]"></div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-1 h-1 rounded-full border border-on-surface-variant/40"></div>
+<span class="font-label text-[10px] uppercase text-on-surface-variant/40">Sincronização pendente</span>
+</div>
+</div>
+<!-- Criterion 2: Complete -->
+<div class="bg-surface-container-low p-6 rounded-xl space-y-4 border border-primary/10 transition-all">
+<div class="flex justify-between items-end">
+<span class="font-label text-xs uppercase tracking-widest text-primary">Entradas registradas</span>
+<span class="font-label text-sm text-primary">50 / 50</span>
+</div>
+<div class="w-full h-[2px] bg-surface-variant overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary w-full"></div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-1 h-1 rounded-full bg-primary shadow-[0_0_8px_rgba(123,156,255,0.8)]"></div>
+<span class="font-label text-[10px] uppercase text-primary">Estágio Concluído</span>
+<span class="material-symbols-outlined text-xs text-primary ml-auto" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<!-- Criterion 3: Incomplete -->
+<div class="bg-surface-container-low p-6 rounded-xl space-y-4 transition-all hover:bg-surface-container-highest/40">
+<div class="flex justify-between items-end">
+<span class="font-label text-xs uppercase tracking-widest text-on-surface-variant/60">Análises de padrão</span>
+<span class="font-label text-sm text-on-surface-variant">2 / 5</span>
+</div>
+<div class="w-full h-[2px] bg-surface-variant overflow-hidden">
+<div class="h-full bg-gradient-to-r from-primary to-secondary w-[40%]"></div>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-1 h-1 rounded-full border border-on-surface-variant/40"></div>
+<span class="font-label text-[10px] uppercase text-on-surface-variant/40">Processamento em standby</span>
+</div>
+</div>
+</section>
+<!-- CTA Text -->
+<div class="mt-12 text-center px-10">
+<p class="font-label text-sm text-[#7B9CFF] tracking-tight leading-relaxed">
+                Continue alimentando seu modelo de identidade
+            </p>
+</div>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 pb-safe">
+<div class="bg-[#1B1B1F] h-[1px] w-full mb-2 opacity-20"></div>
+<div class="flex justify-around items-center px-4 py-3 bg-[#050508]/90 backdrop-blur-xl shadow-[0_-40px_40px_rgba(123,156,255,0.05)]">
+<!-- Pulso -->
+<button class="flex flex-col items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+<span class="font-['DM_Mono'] text-[8px] uppercase tracking-tighter mt-1">Pulso</span>
+</button>
+<!-- Núcleo -->
+<button class="flex flex-col items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors">
+<span class="material-symbols-outlined" data-icon="grain">grain</span>
+<span class="font-['DM_Mono'] text-[8px] uppercase tracking-tighter mt-1">Núcleo</span>
+</button>
+<!-- Central Action -->
+<button class="flex flex-col items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors -mt-4">
+<div class="bg-surface-container-high p-3 rounded-full border border-outline-variant/20 shadow-lg">
+<span class="material-symbols-outlined text-on-surface" data-icon="add">add</span>
+</div>
+</button>
+<!-- Mirror/Twin (Active/Selected contextually as current screen is Twin) -->
+<button class="flex flex-col items-center justify-center text-[#7B9CFF] scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="lock" style="font-variation-settings: 'FILL' 1;">lock</span>
+<span class="font-['DM_Mono'] text-[8px] uppercase tracking-tighter mt-1">Twin</span>
+</button>
+<!-- Espelho/Hub -->
+<button class="flex flex-col items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors">
+<span class="material-symbols-outlined" data-icon="hub">hub</span>
+<span class="font-['DM_Mono'] text-[8px] uppercase tracking-tighter mt-1">Espelho</span>
+</button>
+</div>
+</nav>
+</body></html>

@@ -35,6 +35,7 @@ jobs:
             echo "Error: CAPGO_TOKEN is not set in GitHub Secrets!"
             exit 1
           fi
+          npx @capgo/cli@latest app add io.symbiosis.protocol --apikey "$CAPGO_TOKEN" || true
           npx @capgo/cli@latest bundle upload io.symbiosis.protocol \
             --apikey "$CAPGO_TOKEN" \
             --path out/ \

@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Send, User, Bot, Loader2, Info, Share2, Link, Users } from 'lucide-react';
+import { Sparkles, Send, User, Bot, Loader2, Info, Share2, Link, Users, Mic, Volume2, Square } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { getTwinProfile, sendTwinMessage } from '@/actions/db';
+import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 
 export default function Emergente() {
   const [profile, setProfile] = useState<any>(null);
@@ -14,6 +15,7 @@ export default function Emergente() {
   const [showIntro, setShowIntro] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const { isRecording, isTranscribing, isSpeaking, startRecording, stopRecording, speak, stopSpeaking } = useAudioRecorder();
 
   useEffect(() => {
     getTwinProfile().then(setProfile);
@@ -50,6 +52,17 @@ export default function Emergente() {
       setMessages(prev => [...prev, { role: 'twin', content: 'Desculpe, minha conexão com seu núcleo falhou momentaneamente.' }]);
     } finally {
       setIsTyping(false);
+    }
+  };
+
+  const toggleMic = async () => {
+    if (isRecording) {
+      const text = await stopRecording();
+      if (text) {
+        setInput(text);
+      }
+    } else {
+      await startRecording();
     }
   };
 
@@ -127,7 +140,17 @@ export default function Emergente() {
                     ? 'bg-threshold/30 text-signal/90 rounded-tr-none' 
                     : 'bg-membrane/60 border border-threshold text-signal rounded-tl-none'
                 }`}>
-                  {msg.content}
+                  <div className="flex flex-col gap-2">
+                    {msg.content}
+                    {msg.role === 'twin' && msg.content && (
+                      <button 
+                        onClick={() => speak(msg.content)}
+                        className="self-end text-pulse/40 hover:text-pulse transition-colors"
+                      >
+                        <Volume2 size={12} />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -145,21 +168,31 @@ export default function Emergente() {
       </div>
 
       <div className="p-6 bg-void/95 backdrop-blur-sm border-t border-threshold pb-10">
-        <div className="relative">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSend()}
-            placeholder="Comungar com seu reflexo..."
-            className="w-full bg-membrane/30 border border-threshold rounded-full px-6 py-4 pr-14 text-signal placeholder:text-whisper/40 focus:outline-none focus:border-pulse/50 transition-all font-body"
-          />
+        <div className="relative flex items-center gap-2">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+              placeholder={isRecording ? "Ouvindo seu núcleo..." : "Comungar com seu reflexo..."}
+              className={`w-full bg-membrane/30 border ${isRecording ? 'border-pulse shadow-[0_0_15px_rgba(123,156,255,0.2)]' : 'border-threshold'} rounded-full px-6 py-4 pr-14 text-signal placeholder:text-whisper/40 focus:outline-none focus:border-pulse/50 transition-all font-body`}
+            />
+            <button
+              onClick={handleSend}
+              disabled={!input.trim() || isTyping || isRecording}
+              className="absolute right-2 top-2 w-10 h-10 rounded-full bg-pulse text-void flex items-center justify-center disabled:opacity-30 disabled:grayscale transition-all"
+            >
+              <Send size={18} />
+            </button>
+          </div>
           <button
-            onClick={handleSend}
-            disabled={!input.trim() || isTyping}
-            className="absolute right-2 top-2 w-10 h-10 rounded-full bg-pulse text-void flex items-center justify-center disabled:opacity-30 disabled:grayscale transition-all"
+            onClick={toggleMic}
+            className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+              isRecording ? 'bg-emergence text-void animate-pulse' : 'bg-membrane border border-threshold text-whisper hover:border-pulse/50'
+            }`}
           >
-            <Send size={18} />
+            {isRecording ? <Square size={20} fill="currentColor" /> : <Mic size={20} />}
           </button>
         </div>
       </div>

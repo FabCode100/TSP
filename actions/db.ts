@@ -353,3 +353,46 @@ export async function endSharedSession(token: string, accessorName: string, dura
   const json = await res.json();
   return json.data;
 }
+
+// =============================================
+// PUBLIC TWINS API
+// =============================================
+
+export async function getPublicTwinProfile(figureId: string) {
+  const res = await fetch(`${API_URL}/twin/public/profile/${figureId}`);
+  if (!res.ok) return null;
+  const json = await res.json();
+  return json.data;
+}
+
+export async function* sendPublicTwinMessage(figureId: string, message: string) {
+  const response = await fetch(`${API_URL}/twin/public/chat/${figureId}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!response.ok) throw new Error('Failed to connect to Public Twin');
+
+  const reader = response.body?.getReader();
+  if (!reader) return;
+
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const chunk = decoder.decode(value);
+    const lines = chunk.split('\n');
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const dataStr = line.replace('data: ', '').trim();
+        if (dataStr === '[DONE]') return;
+        try {
+          const { content } = JSON.parse(dataStr);
+          if (content) yield content;
+        } catch (e) { }
+      }
+    }
+  }
+}

@@ -71,12 +71,14 @@ async function twinSharingRoutes(fastify, options) {
     const { message } = request.body;
     
     // Manually set CORS and SSE headers for raw response
-    reply.raw.setHeader('Access-Control-Allow-Origin', '*');
     reply.raw.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     reply.raw.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-    reply.raw.setHeader('Content-Type', 'text/event-stream');
-    reply.raw.setHeader('Cache-Control', 'no-cache');
-    reply.raw.setHeader('Connection', 'keep-alive');
+    const origin = request.headers.origin || '*';
+    reply.raw.setHeader('Access-Control-Allow-Origin', origin);
+    reply.raw.setHeader('Access-Control-Allow-Credentials', 'true');
+    reply.header('Content-Type', 'text/event-stream');
+    reply.header('Cache-Control', 'no-cache');
+    reply.header('Connection', 'keep-alive');
 
     await twinSharingService.chatWithSharedTwin(request.params.token, message, reply);
   });

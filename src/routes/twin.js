@@ -11,9 +11,12 @@ async function twinRoutes(fastify, options) {
 
   fastify.post('/chat', async (request, reply) => {
     const { message } = request.body;
-    reply.raw.setHeader('Content-Type', 'text/event-stream');
-    reply.raw.setHeader('Cache-Control', 'no-cache');
-    reply.raw.setHeader('Connection', 'keep-alive');
+    const origin = request.headers.origin || '*';
+    reply.raw.setHeader('Access-Control-Allow-Origin', origin);
+    reply.raw.setHeader('Access-Control-Allow-Credentials', 'true');
+    reply.header('Content-Type', 'text/event-stream');
+    reply.header('Cache-Control', 'no-cache');
+    reply.header('Connection', 'keep-alive');
     
     await twinService.chatStream(request.user.id, message, reply);
   });

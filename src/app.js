@@ -1,5 +1,7 @@
 const fastify = require('fastify');
 const cors = require('@fastify/cors');
+const path = require('path');
+const staticPlugin = require('@fastify/static');
 const errorHandler = require('./middlewares/errorHandler');
 
 const authRoutes = require('./routes/auth');
@@ -9,18 +11,41 @@ const mirrorRoutes = require('./routes/mirror');
 const patternsRoutes = require('./routes/patterns');
 const twinRoutes = require('./routes/twin');
 const twinSharingRoutes = require('./routes/twinSharing');
+const publicTwinRoutes = require('./routes/publicTwin');
 
 function buildApp(opts = {}) {
   const app = fastify(opts);
 
   // Register CORS
   app.register(cors, {
-    origin: '*', // Configure for production as needed
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    origin: true, // Dynamically reflect the request origin (required for credentials: true)
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    credentials: true,
   });
 
   // Global Error Handler
   app.setErrorHandler(errorHandler);
+
+  // Serve Static Frontend (Next.js export)
+  app.register(staticPlugin, {
+    root: path.join(__dirname, '../out'),
+    prefix: '/',
+    wildcard: false,
+  });
+
+  // Handle SPA routing for the static export
+  app.setNotFoundHandler((request, reply) => {
+    if (request.raw.url.startsWith('/auth') || 
+        request.raw.url.startsWith('/entries') || 
+        request.raw.url.startsWith('/graph') || 
+        request.raw.url.startsWith('/mirror') || 
+        request.raw.url.startsWith('/patterns') || 
+        request.raw.url.startsWith('/twin')) {
+      return reply.code(404).send({ error: 'Not Found' });
+    }
+    return reply.sendFile('index.html');
+  });
 
   // Register Routes
   app.register(authRoutes, { prefix: '/auth' });
@@ -30,6 +55,7 @@ function buildApp(opts = {}) {
   app.register(patternsRoutes, { prefix: '/patterns' });
   app.register(twinRoutes, { prefix: '/twin' });
   app.register(twinSharingRoutes, { prefix: '/twin/share' });
+  app.register(publicTwinRoutes, { prefix: '/twin' });
 
   // Health check
   app.get('/health', async () => {

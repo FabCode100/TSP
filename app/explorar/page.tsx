@@ -1,14 +1,28 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { motion } from 'motion/react';
-import { Sparkles, Send, Clock, MessageSquare, LogOut } from 'lucide-react';
+import { Sparkles, Send, Clock, MessageSquare, LogOut, Mic, Volume2, Square } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { getSharedTwinProfile, sendSharedTwinMessage, endSharedSession } from '@/actions/db';
+import { getSharedTwinProfile, sendSharedTwinMessage, endSharedSession, getPublicTwinProfile, sendPublicTwinMessage } from '@/actions/db';
+import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 
 export default function ExplorarTwin() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#050508] flex items-center justify-center">
+        <Sparkles size={32} className="text-[#7B9CFF] animate-pulse" />
+      </div>
+    }>
+      <ExplorarContent />
+    </Suspense>
+  );
+}
+
+function ExplorarContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
+  const publicId = searchParams.get('public');
   const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
   const [messages, setMessages] = useState<{ role: 'twin' | 'visitor'; content: string; time: string }[]>([]);
@@ -18,13 +32,14 @@ export default function ExplorarTwin() {
   const [error, setError] = useState('');
   const [sessionStart] = useState(Date.now());
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { isRecording, isTranscribing, isSpeaking, startRecording, stopRecording, speak, stopSpeaking } = useAudioRecorder();
 
   const now = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 
   useEffect(() => {
-    if (!token) return;
+    if (!token && !publicId) return;
     loadProfile();
-  }, [token]);
+  }, [token, publicId]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -33,10 +48,15 @@ export default function ExplorarTwin() {
   }, [messages, isTyping]);
 
   async function loadProfile() {
-    if (!token) return;
-    const p = await getSharedTwinProfile(token);
+    let p;
+    if (publicId) {
+      p = await getPublicTwinProfile(publicId);
+    } else if (token) {
+      p = await getSharedTwinProfile(token);
+    }
+
     if (!p) {
-      setError('Token inválido ou expirado.');
+      setError('Identidade não encontrada ou conexão expirada.');
       setLoading(false);
       return;
     }
@@ -55,14 +75,24 @@ export default function ExplorarTwin() {
       let currentResponse = '';
       setMessages(prev => [...prev, { role: 'twin', content: '', time: now() }]);
 
-      if (!token) return;
-      for await (const chunk of sendSharedTwinMessage(token, userMsg)) {
-        currentResponse += chunk;
-        setMessages(prev => {
-          const newMsgs = [...prev];
-          newMsgs[newMsgs.length - 1].content = currentResponse;
-          return newMsgs;
-        });
+      if (publicId) {
+        for await (const chunk of sendPublicTwinMessage(publicId, userMsg)) {
+          currentResponse += chunk;
+          setMessages(prev => {
+            const newMsgs = [...prev];
+            newMsgs[newMsgs.length - 1].content = currentResponse;
+            return newMsgs;
+          });
+        }
+      } else if (token) {
+        for await (const chunk of sendSharedTwinMessage(token, userMsg)) {
+          currentResponse += chunk;
+          setMessages(prev => {
+            const newMsgs = [...prev];
+            newMsgs[newMsgs.length - 1].content = currentResponse;
+            return newMsgs;
+          });
+        }
       }
     } catch (e) {
       setMessages(prev => [...prev, { role: 'twin', content: 'Conexão com o núcleo falhou momentaneamente.', time: now() }]);
@@ -71,12 +101,24 @@ export default function ExplorarTwin() {
     }
   }
 
+  const toggleMic = async () => {
+    if (isRecording) {
+      const text = await stopRecording();
+      if (text) {
+        setInput(text);
+      }
+    } else {
+      await startRecording();
+    }
+  };
+
   async function handleEndSession() {
-    if (!token) return;
-    const duration = Math.floor((Date.now() - sessionStart) / 1000);
-    const msgCount = messages.filter(m => m.role === 'visitor').length;
-    await endSharedSession(token, 'Visitante', duration, msgCount);
-    router.push('/conectar');
+    if (token) {
+      const duration = Math.floor((Date.now() - sessionStart) / 1000);
+      const msgCount = messages.filter(m => m.role === 'visitor').length;
+      await endSharedSession(token, 'Visitante', duration, msgCount);
+    }
+    router.replace(publicId ? '/publicos' : '/conectar');
   }
 
   function formatDuration() {
@@ -200,7 +242,17 @@ export default function ExplorarTwin() {
                     ? "font-['Cormorant_Garamond'] italic text-lg md:text-xl leading-relaxed text-[#e5e1e7]/90 break-words"
                     : "font-serif text-sm md:text-base break-words"
                   }>
+                  <div className="flex flex-col gap-2">
                     {msg.content || '...'}
+                    {msg.role === 'twin' && msg.content && (
+                      <button 
+                        onClick={() => speak(msg.content)}
+                        className="self-end text-[#7B9CFF]/40 hover:text-[#7B9CFF] transition-colors"
+                      >
+                        <Volume2 size={12} />
+                      </button>
+                    )}
+                  </div>
                   </p>
                 </div>
               </motion.div>
@@ -231,21 +283,31 @@ export default function ExplorarTwin() {
       {/* Action Footer */}
       <footer className="shrink-0 bg-[#050508]/80 backdrop-blur-xl px-4 py-6 border-t border-[#444652]/10">
         <div className="max-w-3xl mx-auto flex flex-col items-center gap-4">
-          <div className="relative w-full">
-            <input
-              type="text"
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              onKeyDown={e => e.key === 'Enter' && handleSend()}
-              placeholder={`Fale com o Twin de ${profile?.ownerName || ''}...`}
-              className="w-full bg-[#1b1b1f] border-none rounded-full px-8 py-4 focus:ring-1 focus:ring-[#7B9CFF]/40 text-[#e5e1e7] placeholder:text-[#e5e1e7]/30 font-serif transition-all outline-none text-sm"
-            />
+          <div className="relative w-full flex items-center gap-2">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSend()}
+                placeholder={isRecording ? "Sintonizando sua voz..." : `Fale com o Twin de ${profile?.ownerName || ''}...`}
+                className={`w-full bg-[#1b1b1f] border ${isRecording ? 'ring-1 ring-[#7B9CFF]/60 shadow-[0_0_15px_rgba(123,156,255,0.1)]' : 'border-none'} rounded-full px-8 py-4 focus:ring-1 focus:ring-[#7B9CFF]/40 text-[#e5e1e7] placeholder:text-[#e5e1e7]/30 font-serif transition-all outline-none text-sm`}
+              />
+              <button
+                onClick={handleSend}
+                disabled={!input.trim() || isTyping || isRecording}
+                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#7B9CFF] rounded-full flex items-center justify-center text-[#050508] disabled:opacity-30 transition-all font-semibold"
+              >
+                <Send size={16} />
+              </button>
+            </div>
             <button
-              onClick={handleSend}
-              disabled={!input.trim() || isTyping}
-              className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-[#7B9CFF] rounded-full flex items-center justify-center text-[#050508] disabled:opacity-30 transition-all"
+              onClick={toggleMic}
+              className={`w-12 h-12 rounded-full flex items-center justify-center transition-all ${
+                isRecording ? 'bg-[#7B9CFF] text-[#050508] animate-pulse' : 'bg-[#1b1b1f] border border-[#444652]/20 text-[#e5e1e7]/60 hover:text-[#7B9CFF]'
+              }`}
             >
-              <Send size={16} />
+              {isRecording ? <Square size={18} fill="currentColor" /> : <Mic size={18} />}
             </button>
           </div>
           <button onClick={handleEndSession} className="flex items-center gap-2 group transition-opacity hover:opacity-80">

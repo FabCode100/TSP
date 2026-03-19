@@ -93,11 +93,11 @@ export default function Padroes() {
                   <div className="w-6 h-6 rounded-full bg-void border-2 border-emergence flex items-center justify-center z-10 mb-4">
                     <div className="w-2 h-2 rounded-full bg-emergence" />
                   </div>
-                  <span className="font-interface text-[10px] text-whisper mb-2">
+                  <span className="font-interface text-[10px] text-whisper mb-2 text-center uppercase tracking-tighter">
                     {new Date(marco.detectedAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).toUpperCase()}
                   </span>
-                  <span className="font-display text-[16px] text-signal mb-1">{marco.title}</span>
-                  <span className="font-body text-[14px] text-signal/60 text-center leading-tight">{marco.description}</span>
+                  <span className="font-display text-[16px] text-signal mb-1 text-center">{marco.title}</span>
+                  <span className="font-body text-[14px] text-signal/60 text-center leading-tight break-words px-2">{marco.description}</span>
                 </div>
               )) : (
                 <div className="text-whisper font-body text-center w-full">

@@ -4,11 +4,16 @@ import { transcribeAudio } from '@/lib/aiClient';
 export function useAudioRecorder() {
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const synthRef = useRef<SpeechSynthesis | null>(null);
 
   const startRecording = useCallback(async () => {
     try {
+      if (typeof window !== 'undefined') {
+        synthRef.current = window.speechSynthesis;
+      }
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
@@ -60,10 +65,38 @@ export function useAudioRecorder() {
     });
   }, []);
 
+  const speak = useCallback((text: string) => {
+    if (!window.speechSynthesis) return;
+    
+    // Stop any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pt-BR';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    window.speechSynthesis.speak(utterance);
+  }, []);
+
+  const stopSpeaking = useCallback(() => {
+    if (window.speechSynthesis) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    }
+  }, []);
+
   return {
     isRecording,
     isTranscribing,
+    isSpeaking,
     startRecording,
-    stopRecording
+    stopRecording,
+    speak,
+    stopSpeaking
   };
 }

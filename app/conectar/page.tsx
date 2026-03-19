@@ -105,7 +105,7 @@ export default function Conectar() {
       {/* Header */}
       <header className="shrink-0 sticky top-0 z-50 bg-[#050508] flex justify-between items-center px-6 py-4 border-b border-[#444652]/10">
         <div className="flex items-center gap-4">
-          <button onClick={() => router.back()} className="text-[#7B9CFF] hover:opacity-80 transition-opacity">
+          <button onClick={() => router.push('/emergente')} className="text-[#7B9CFF] hover:opacity-80 transition-opacity">
             <ArrowLeft size={24} strokeWidth={1.5} />
           </button>
           <h1 className="font-['Cormorant_Garamond'] text-2xl font-light italic">Connect Twin</h1>
@@ -113,33 +113,29 @@ export default function Conectar() {
         <span className="font-['DM_Mono'] text-[10px] uppercase tracking-tight text-[#E8E4D9]/60">v.2.0.4</span>
       </header>
 
-      <main className="flex-1 overflow-y-auto no-scrollbar px-6 py-12 max-w-2xl mx-auto w-full">
+      <main className="flex-1 overflow-y-auto no-scrollbar px-6 py-12 w-full mx-auto">
         {/* Header Section */}
         <section className="mb-12 text-center">
-          <h2 className="font-['Cormorant_Garamond'] text-5xl mb-4 leading-tight">Enter Access Protocol</h2>
-          <p className="text-[#E8E4D9]/60 font-serif text-lg italic">
+          <h2 className="font-['Cormorant_Garamond'] text-3xl md:text-5xl mb-4 leading-tight">Enter Access Protocol</h2>
+          <p className="text-[#E8E4D9]/60 font-serif text-base md:text-lg italic">
             Provide the unique hexadecimal signature to synchronize with your emergent twin.
           </p>
         </section>
 
         {/* Code Input */}
-        <section className="mb-16 space-y-8">
-          <div className="flex justify-center gap-3" onPaste={handlePaste}>
+        <section className="mb-16 space-y-6">
+          <div className="grid grid-cols-6 gap-2 w-[95%] max-w-[340px] mx-auto" onPaste={handlePaste}>
             {code.map((char, i) => (
-              <div key={i} className="flex items-center">
-                {i === 3 && (
-                  <div className="flex items-center text-[#7B9CFF]/30 mx-1 text-2xl">—</div>
-                )}
-                <input
-                  ref={el => { inputRefs.current[i] = el; }}
-                  type="text"
-                  maxLength={1}
-                  value={char}
-                  onChange={e => handleChange(i, e.target.value)}
-                  onKeyDown={e => handleKeyDown(i, e)}
-                  className="w-12 h-16 md:w-16 md:h-20 bg-[#1b1b1f] border border-[#444652]/10 rounded-xl text-center text-2xl text-[#7B9CFF] font-['DM_Mono'] outline-none focus:shadow-[0_0_20px_rgba(123,156,255,0.15)] focus:border-[#7B9CFF]/30 transition-all"
-                />
-              </div>
+              <input
+                key={i}
+                ref={el => { inputRefs.current[i] = el; }}
+                type="text"
+                maxLength={1}
+                value={char}
+                onChange={e => handleChange(i, e.target.value)}
+                onKeyDown={e => handleKeyDown(i, e)}
+                className="w-full aspect-square bg-[#1b1b1f] border border-[#444652]/20 rounded-xl text-center text-xl md:text-3xl text-[#7B9CFF] font-['DM_Mono'] outline-none focus:border-[#7B9CFF]/50 transition-all p-0"
+              />
             ))}
           </div>
 
@@ -160,6 +156,27 @@ export default function Conectar() {
               {loading ? 'Connecting...' : 'Conectar'}
             </motion.button>
           </div>
+        </section>
+
+        {/* Discover Public Archives */}
+        <section className="mb-16">
+          <div className="flex justify-between items-end mb-6">
+            <h3 className="font-['Cormorant_Garamond'] text-3xl italic">Discover</h3>
+            <span className="font-['DM_Mono'] text-[10px] text-[#7B9CFF] uppercase tracking-widest">Public Archives</span>
+          </div>
+          <button 
+            onClick={() => router.push('/publicos')}
+            className="w-full flex items-center p-5 bg-gradient-to-r from-[#7B9CFF]/10 to-transparent border border-[#7B9CFF]/20 rounded-2xl hover:bg-[#7B9CFF]/20 transition-all group"
+          >
+            <div className="w-12 h-12 rounded-full bg-[#7B9CFF] flex items-center justify-center mr-5 shadow-[0_0_15px_rgba(123,156,255,0.3)]">
+              <Sparkles size={20} className="text-[#050508]" />
+            </div>
+            <div className="flex-grow text-left">
+              <h4 className="font-['Cormorant_Garamond'] text-xl leading-tight">Master Node Archives</h4>
+              <p className="font-['DM_Mono'] text-[10px] uppercase tracking-widest text-[#E8E4D9]/40 mt-1">Explore Musk, Jobs & more</p>
+            </div>
+            <ChevronRight size={20} className="text-[#7B9CFF]" />
+          </button>
         </section>
 
         {/* Recent Archives */}
@@ -185,8 +202,8 @@ export default function Conectar() {
                   <div className="w-12 h-12 rounded-full bg-[rgba(123,156,255,0.05)] backdrop-blur-[20px] flex items-center justify-center mr-5 border border-[#7B9CFF]/10">
                     <Fingerprint size={20} className="text-[#A78BFA]" />
                   </div>
-                  <div className="flex-grow">
-                    <h4 className="font-['Cormorant_Garamond'] text-xl leading-tight">{archive.name}</h4>
+                  <div className="flex-grow min-w-0">
+                    <h4 className="font-['Cormorant_Garamond'] text-xl leading-tight truncate">{archive.name}</h4>
                     <div className="flex items-center gap-3">
                       <span className="font-['DM_Mono'] text-[10px] uppercase tracking-widest text-[#7B9CFF]">Active Link</span>
                       <span className="w-1 h-1 rounded-full bg-[#E8E4D9]/20" />

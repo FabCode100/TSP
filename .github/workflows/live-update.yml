@@ -40,4 +40,4 @@ jobs:
             --apikey "$CAPGO_TOKEN" \
             --path out/ \
             --channel production \
-            --bundle $(node -p "require('./package.json').version").${{ github.run_number }}
+            --bundle $(node -p "const v=require('./package.json').version.split('.'); console.log(\`\${v[0]}.\${v[1]}.${{ github.run_number }}\`)")

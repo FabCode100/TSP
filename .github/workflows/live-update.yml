@@ -2,17 +2,8 @@ name: Live Update (CapGo OTA)
 
 on:
   push:
-    branches:
-      - main
-    paths:
-      - 'app/**'
-      - 'components/**'
-      - 'lib/**'
-      - 'actions/**'
-      - 'hooks/**'
-      - 'public/**'
-      - 'next.config.mjs'
-      - 'package.json'
+    branches: [ main ]
+  workflow_dispatch:
 
 jobs:
   deploy:

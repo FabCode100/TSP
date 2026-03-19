@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { getEntries, addEntry as dbAddEntry, removeEntry as dbRemoveEntry } from '@/actions/db';
+import { getEntries, addEntry as dbAddEntry, removeEntry as dbRemoveEntry, getAuthToken } from '@/actions/db';
 
 export type Entry = {
   id: string;
@@ -24,15 +24,25 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [entries, setEntries] = useState<Entry[]>([]);
 
   const refreshEntries = async () => {
-    const data = await getEntries();
-    const formatted = data.map((e: any) => ({
-      id: e.id,
-      time: new Date(e.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-      type: e.type,
-      content: e.content,
-      isInsight: e.type === 'INSIGHT',
-    }));
-    setEntries(formatted);
+    const token = await getAuthToken();
+    if (!token) {
+        console.log('[AppContext] No token found, skipping refreshEntries');
+        return;
+    }
+    
+    try {
+      const data = await getEntries();
+      const formatted = data.map((e: any) => ({
+        id: e.id,
+        time: new Date(e.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+        type: e.type,
+        content: e.content,
+        isInsight: e.type === 'INSIGHT',
+      }));
+      setEntries(formatted);
+    } catch (error) {
+       console.error('[AppContext] Failed to refresh entries:', error);
+    }
   };
 
   useEffect(() => {

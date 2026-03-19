@@ -1,13 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { loginWithGoogleMock } from '@/actions/db';
+import { loginWithGoogleMock, handleGoogleRedirect } from '@/actions/db';
 import { Loader2 } from 'lucide-react';
 
 export default function Login() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
+  const [initChecked, setInitChecked] = useState(false);
+
+  useEffect(() => {
+    // Check if we just landed here from a redirect with a fragment/token
+    if (typeof window !== 'undefined' && (window.location.hash || window.location.search)) {
+        setIsLoading(true);
+        handleGoogleRedirect().then(token => {
+            if (token) {
+                router.push('/');
+            }
+            setIsLoading(false);
+            setInitChecked(true);
+        }).catch(() => {
+            setIsLoading(false);
+            setInitChecked(true);
+        });
+    } else {
+        setInitChecked(true);
+    }
+  }, [router]);
 
   const handleLogin = async () => {
     setIsLoading(true);

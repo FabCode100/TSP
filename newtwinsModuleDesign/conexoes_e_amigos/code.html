@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>The Archivist's Circle | Connections</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&amp;family=DM+Mono:wght@300;400;500&amp;family=Space+Grotesk:wght@300;400;700&amp;family=Newsreader:opsz,ital,wght@6-72,0,200..800;6-72,1,200..800&amp;family=Noto+Serif:ital,wght@0,100..900;1,100..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "surface": "#050508",
+              "on-surface": "#E8E4D9",
+              "primary": "#7B9CFF",
+              "secondary": "#A78BFA",
+              "surface-container": "#131317",
+              "surface-container-low": "#1B1B1F",
+              "surface-container-high": "#2A292E",
+              "surface-container-highest": "#353439",
+              "outline-variant": "#444652",
+              "primary-container": "rgba(123, 156, 255, 0.15)",
+            },
+            fontFamily: {
+              "headline": ["Cormorant Garamond", "serif"],
+              "body": ["Noto Serif", "serif"],
+              "label": ["DM Mono", "monospace"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #050508;
+            color: #E8E4D9;
+            font-family: 'Noto Serif', serif;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            backdrop-filter: blur(20px);
+            background: rgba(19, 19, 23, 0.6);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#050508] dark:bg-[#050508] flex justify-between items-center px-6 py-4">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#7B9CFF]">arrow_back</span>
+<h1 class="text-2xl font-headline font-light italic text-[#E8E4D9]">The Archivist's Circle</h1>
+</div>
+<div class="flex items-center gap-4">
+<span class="label-sm font-label uppercase tracking-tighter text-[#7B9CFF] text-[10px]">v.2.0.4</span>
+</div>
+</header>
+<div class="bg-[#131317] h-px w-full opacity-20 mt-[72px]"></div>
+<main class="px-6 pt-8 space-y-12 max-w-2xl mx-auto">
+<!-- Section 1: Pending Synapses -->
+<section>
+<header class="mb-6 flex justify-between items-end">
+<h2 class="font-headline text-3xl font-light">Pending Synapses</h2>
+<span class="font-label text-[10px] uppercase tracking-widest opacity-40">2 requests</span>
+</header>
+<div class="space-y-4">
+<!-- Request Item 1 -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-primary/20">
+<img alt="Avatar" class="w-full h-full object-cover rounded-full" data-alt="Portrait of a young man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwJKUktcTcQ0JrWVePv04WAqID7z-ncbFXiUJx8D3eMAIKezw2iZWlTFFZ2W-boj1WCOAMBdm4irUeCxhdXOIONYkFhwbn-Zj2Jjgpoa-wl309cn6l8i3eQcoLBjPW3UYVnGQR_Wc_sZfV4aearW9O3-LBbRZtAlXTxLPb2Ywvvtv-LBRiKWa7qjDnRhfafmE51sxSFx8iuPLub44iOEVxW0weRcv4_n3TGd70IybD2TZ9jHlCy90k9UGLvBz75FW1av2vMbqZPyrB"/>
+</div>
+<div>
+<p class="font-semibold text-sm">Julian Vane</p>
+<p class="font-label text-[9px] uppercase tracking-tight opacity-40">Identity Match: 88%</p>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="font-label text-[10px] uppercase tracking-widest text-[#7B9CFF] hover:opacity-70 transition-opacity">[Accept]</button>
+<button class="font-label text-[10px] uppercase tracking-widest opacity-40 hover:opacity-70 transition-opacity">[Decline]</button>
+</div>
+</div>
+<!-- Request Item 2 -->
+<div class="flex items-center justify-between p-4 rounded-xl bg-surface-container-low border border-outline-variant/10">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest flex items-center justify-center border border-secondary/20">
+<img alt="Avatar" class="w-full h-full object-cover rounded-full" data-alt="Portrait of a woman with dark hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHF0m3v6j-8a2OtniM_gtfxTxUyrPOji8kJve1ay_ziYmvIYz4graa0Hmniq9KoNK5re4ZT34UgjwRUrEVmnA5kxC8v9VrhFiSBSCgowFslLXaTnxTshit1tMwk2bOryVMm3O-Qvnpx5970VswPv83EgppX8Daq3FChCPlrIi7McrYT-h7J1Nw1UWbLiyvN_yD9I4fVDajcg5wcvoECCSBc4g4JHICHNJwuXDzgqUS15W-2rG41cvuzP9nU8C6hGMxfQAO7wJMGaD4"/>
+</div>
+<div>
+<p class="font-semibold text-sm">Elena Voss</p>
+<p class="font-label text-[9px] uppercase tracking-tight opacity-40">Identity Match: 94%</p>
+</div>
+</div>
+<div class="flex gap-4">
+<button class="font-label text-[10px] uppercase tracking-widest text-[#7B9CFF] hover:opacity-70 transition-opacity">[Accept]</button>
+<button class="font-label text-[10px] uppercase tracking-widest opacity-40 hover:opacity-70 transition-opacity">[Decline]</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 2: Synchronized Identities -->
+<section>
+<header class="mb-6 flex justify-between items-end border-b border-outline-variant/10 pb-2">
+<h2 class="font-headline text-3xl font-light">Synchronized Identities</h2>
+<span class="font-label text-[10px] uppercase tracking-widest opacity-40">Active Links</span>
+</header>
+<div class="space-y-1">
+<!-- Friend 1 -->
+<div class="group flex items-center justify-between py-6 border-b border-outline-variant/5 hover:bg-white/[0.02] transition-colors cursor-pointer">
+<div class="flex items-center gap-6">
+<div class="relative">
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-xl font-headline border border-outline-variant/20">
+                                M
+                            </div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-primary rounded-full border-2 border-surface shadow-[0_0_10px_rgba(123,156,255,0.5)]"></div>
+</div>
+<div>
+<h3 class="font-headline text-[18px] text-[#E8E4D9]">Marcus Thorne</h3>
+<p class="font-label text-[10px] uppercase tracking-widest text-[#E8E4D9]/40 mt-1">Last sync: 2 hours ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#E8E4D9]/20 group-hover:text-primary transition-colors">arrow_forward</span>
+</div>
+<!-- Friend 2 -->
+<div class="group flex items-center justify-between py-6 border-b border-outline-variant/5 hover:bg-white/[0.02] transition-colors cursor-pointer">
+<div class="flex items-center gap-6">
+<div class="relative">
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-xl font-headline border border-outline-variant/20">
+                                S
+                            </div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-surface-container-highest rounded-full border-2 border-surface"></div>
+</div>
+<div>
+<h3 class="font-headline text-[18px] text-[#E8E4D9]">Sarah Jenkins</h3>
+<p class="font-label text-[10px] uppercase tracking-widest text-[#E8E4D9]/40 mt-1">Last sync: 14 hours ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#E8E4D9]/20 group-hover:text-primary transition-colors">arrow_forward</span>
+</div>
+<!-- Friend 3 -->
+<div class="group flex items-center justify-between py-6 border-b border-outline-variant/5 hover:bg-white/[0.02] transition-colors cursor-pointer">
+<div class="flex items-center gap-6">
+<div class="relative">
+<div class="w-14 h-14 rounded-full bg-surface-container flex items-center justify-center text-xl font-headline border border-outline-variant/20">
+                                D
+                            </div>
+<div class="absolute bottom-0 right-0 w-3 h-3 bg-primary rounded-full border-2 border-surface shadow-[0_0_10px_rgba(123,156,255,0.5)]"></div>
+</div>
+<div>
+<h3 class="font-headline text-[18px] text-[#E8E4D9]">David Chen</h3>
+<p class="font-label text-[10px] uppercase tracking-widest text-[#E8E4D9]/40 mt-1">Last sync: 1 hour ago</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-[#E8E4D9]/20 group-hover:text-primary transition-colors">arrow_forward</span>
+</div>
+</div>
+</section>
+<!-- Section 3: Activity Summary -->
+<section class="pt-8">
+<div class="glass-card p-6 rounded-2xl border border-primary/10 shadow-[0_8px_32px_rgba(0,0,0,0.4)]">
+<div class="flex justify-between items-start mb-6">
+<div>
+<p class="font-label text-[10px] uppercase tracking-[0.2em] text-[#7B9CFF] mb-2">TwinAccessLog // Summary</p>
+<h4 class="font-headline text-xl italic text-[#E8E4D9]">3 active sessions this week</h4>
+</div>
+<div class="flex gap-1.5 pt-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(123,156,255,0.8)]"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/40"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/40"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(123,156,255,0.8)]"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/40"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary shadow-[0_0_8px_rgba(123,156,255,0.8)]"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary/10"></span>
+</div>
+</div>
+<div class="flex items-end gap-1 h-12 w-full">
+<div class="flex-1 bg-surface-container-highest rounded-t-sm h-[20%]"></div>
+<div class="flex-1 bg-surface-container-highest rounded-t-sm h-[45%]"></div>
+<div class="flex-1 bg-primary/40 rounded-t-sm h-[60%]"></div>
+<div class="flex-1 bg-primary rounded-t-sm h-[85%]"></div>
+<div class="flex-1 bg-surface-container-highest rounded-t-sm h-[30%]"></div>
+<div class="flex-1 bg-primary/60 rounded-t-sm h-[70%]"></div>
+<div class="flex-1 bg-surface-container-highest rounded-t-sm h-[15%]"></div>
+<div class="flex-1 bg-surface-container-highest rounded-t-sm h-[25%]"></div>
+<div class="flex-1 bg-secondary/40 rounded-t-sm h-[55%]"></div>
+<div class="flex-1 bg-secondary rounded-t-sm h-[90%]"></div>
+</div>
+<div class="flex justify-between mt-2 font-label text-[8px] uppercase tracking-widest opacity-30">
+<span>Cycle Start</span>
+<span>Real-Time Projection</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-8 pb-6 pt-2 bg-[#050508]/90 dark:bg-[#050508]/90 backdrop-blur-xl border-t border-[#444652]/15 rounded-t-3xl shadow-[0_-4px_40px_rgba(123,156,255,0.1)]">
+<a class="flex flex-col items-center justify-center text-[#E8E4D9]/40 p-3 hover:text-[#7B9CFF] transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-[#7B9CFF]/15 text-[#7B9CFF] rounded-full p-3 scale-110 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="group" style="font-variation-settings: 'FILL' 1;">group</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#E8E4D9]/40 p-3 hover:text-[#7B9CFF] transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#E8E4D9]/40 p-3 hover:text-[#7B9CFF] transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</a>
+</nav>
+</body></html>

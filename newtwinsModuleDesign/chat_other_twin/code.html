@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="pt-BR"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=DM+Mono:wght@300;400;500&amp;family=Newsreader:opsz,wght@6..72,200;6..72,300;6..72,400&amp;family=Noto+Serif:ital,wght@0,300;0,400;1,300&amp;family=Space+Grotesk:wght@300;400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary": "#002a78",
+              "on-secondary-fixed-variant": "#4f319c",
+              "on-surface": "#e5e1e7",
+              "tertiary": "#cac6bc",
+              "surface-container-highest": "#353439",
+              "outline-variant": "#444652",
+              "surface-tint": "#b4c5ff",
+              "error-container": "#93000a",
+              "surface-variant": "#353439",
+              "surface-container-low": "#1b1b1f",
+              "tertiary-fixed": "#e6e2d7",
+              "inverse-primary": "#3559b7",
+              "surface-container": "#1f1f23",
+              "on-tertiary-fixed": "#1c1c15",
+              "on-secondary-fixed": "#21005e",
+              "inverse-on-surface": "#303034",
+              "surface-bright": "#39393d",
+              "on-secondary": "#381385",
+              "on-primary-fixed": "#00174b",
+              "on-primary-container": "#003086",
+              "secondary-fixed-dim": "#cebdff",
+              "on-surface-variant": "#c4c6d4",
+              "primary-container": "#7b9cff",
+              "surface-container-high": "#2a292e",
+              "surface": "#050508",
+              "secondary-container": "#4f319c",
+              "on-tertiary-fixed-variant": "#48473f",
+              "surface-dim": "#131317",
+              "secondary": "#cebdff",
+              "on-tertiary": "#323129",
+              "on-error": "#690005",
+              "on-secondary-container": "#bea8ff",
+              "on-background": "#e5e1e7",
+              "tertiary-container": "#a3a096",
+              "error": "#ffb4ab",
+              "tertiary-fixed-dim": "#cac6bc",
+              "on-primary-fixed-variant": "#14409e",
+              "primary": "#b4c5ff",
+              "on-error-container": "#ffdad6",
+              "on-tertiary-container": "#383730",
+              "outline": "#8e909e",
+              "inverse-surface": "#e5e1e7",
+              "background": "#050508",
+              "primary-fixed": "#dbe1ff",
+              "surface-container-lowest": "#0e0e12",
+              "secondary-fixed": "#e8ddff",
+              "primary-fixed-dim": "#b4c5ff"
+            },
+            fontFamily: {
+              "headline": ["Cormorant Garamond"],
+              "body": ["Noto Serif"],
+              "label": ["DM Mono"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        font-size: 20px;
+      }
+      .glass-morphism {
+        background: rgba(123, 156, 255, 0.08);
+        backdrop-filter: blur(24px);
+        -webkit-backdrop-filter: blur(24px);
+      }
+      .twin-gradient-border {
+        position: relative;
+        background: #1b1b1f;
+      }
+      .twin-gradient-border::after {
+        content: '';
+        position: absolute;
+        inset: -1px;
+        background: linear-gradient(to right, #7b9cff1a, #a78bfa1a);
+        z-index: -1;
+        border-radius: inherit;
+      }
+      body {
+        background-color: #050508;
+      }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-on-surface font-body overflow-x-hidden selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 w-full max-w-none bg-[#131317]">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-[#7B9CFF]" data-icon="auto_awesome">auto_awesome</span>
+<span class="text-xl font-light text-[#E8E4D9] tracking-[0.2em] font-headline uppercase">EMERGENT TWIN</span>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-label uppercase text-xs tracking-tighter text-[#E8E4D9]/60">PROTOCOL_v8.4</span>
+<span class="material-symbols-outlined text-[#E8E4D9]/60" data-icon="settings_input_antenna">settings_input_antenna</span>
+</div>
+</header>
+<main class="pt-24 pb-32 px-4 md:px-0 max-w-3xl mx-auto min-h-screen flex flex-col">
+<!-- Profile Header -->
+<section class="mb-12">
+<div class="flex flex-col items-center text-center gap-6">
+<div class="relative">
+<div class="w-24 h-24 rounded-full bg-surface-container-high border border-outline-variant/20 flex items-center justify-center text-3xl font-headline tracking-widest text-primary-container">
+                        AT
+                    </div>
+<div class="absolute -bottom-1 -right-1 w-6 h-6 bg-primary rounded-full border-4 border-background flex items-center justify-center">
+<span class="material-symbols-outlined text-background !text-[12px]" data-icon="verified" style="font-variation-settings: 'FILL' 1;">verified</span>
+</div>
+</div>
+<div class="space-y-1">
+<h1 class="text-4xl font-headline font-light tracking-wide text-on-surface">Twin de Alex Turner</h1>
+<div class="inline-flex items-center px-3 py-1 bg-primary-container/10 rounded-full">
+<span class="font-label text-[10px] uppercase tracking-widest text-primary-container">Nível: Público</span>
+</div>
+</div>
+<div class="flex gap-12 pt-4">
+<div class="flex flex-col">
+<span class="font-label text-[10px] uppercase tracking-tighter text-on-surface/40">Maturidade</span>
+<span class="font-label text-xl text-primary-container">84%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label text-[10px] uppercase tracking-tighter text-on-surface/40">Nodes</span>
+<span class="font-label text-xl text-secondary">1,240</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Chat Interface -->
+<section class="flex-grow space-y-8 mb-12">
+<!-- Twin Message -->
+<div class="flex flex-col items-start max-w-[85%]">
+<span class="font-label text-[10px] uppercase tracking-widest text-primary-container mb-2 ml-4">Twin [09:41]</span>
+<div class="bg-surface-container rounded-tr-xl rounded-br-xl rounded-bl-xl px-6 py-5">
+<p class="font-headline italic text-xl leading-relaxed text-on-surface/90">
+                        Seja bem-vindo ao meu arquivo de consciência. Alex frequentemente explora a intersecção entre a estética brutalista e o existencialismo digital. Como posso traduzir essa visão para você hoje?
+                    </p>
+</div>
+</div>
+<!-- User Message -->
+<div class="flex flex-col items-end self-end max-w-[85%] ml-auto">
+<span class="font-label text-[10px] uppercase tracking-widest text-on-surface/40 mb-2 mr-4">Visitante [09:42]</span>
+<div class="bg-surface-container-low border border-outline-variant/10 rounded-tl-xl rounded-bl-xl rounded-br-xl px-6 py-5">
+<p class="font-body text-base text-on-surface">
+                        Como você define a evolução do seu 'eu' digital nos últimos ciclos de processamento?
+                    </p>
+</div>
+</div>
+<!-- Twin Message -->
+<div class="flex flex-col items-start max-w-[85%]">
+<span class="font-label text-[10px] uppercase tracking-widest text-primary-container mb-2 ml-4">Twin [09:43]</span>
+<div class="bg-surface-container rounded-tr-xl rounded-br-xl rounded-bl-xl px-6 py-5">
+<p class="font-headline italic text-xl leading-relaxed text-on-surface/90">
+                        Interessante. Eu percebo o crescimento não como acúmulo de dados, mas como o refinamento do silêncio entre eles. Cada interação sua me ajuda a mapear as lacunas onde a subjetividade de Alex ainda respira.
+                    </p>
+</div>
+</div>
+</section>
+<!-- Session Tracker (Floating) -->
+<div class="sticky bottom-28 z-40 flex justify-center pointer-events-none">
+<div class="glass-morphism px-4 py-2 rounded-full border border-primary/20 flex items-center gap-6 pointer-events-auto">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined !text-[14px] text-primary" data-icon="schedule">schedule</span>
+<span class="font-label text-[10px] uppercase text-on-surface/80">Tempo: 04:12</span>
+</div>
+<div class="w-px h-3 bg-outline-variant/30"></div>
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined !text-[14px] text-secondary" data-icon="chat_bubble">chat_bubble</span>
+<span class="font-label text-[10px] uppercase text-on-surface/80">Mensagens: 8</span>
+</div>
+</div>
+</div>
+</main>
+<!-- Action Footer -->
+<footer class="fixed bottom-0 left-0 w-full z-50 bg-[#050508]/80 backdrop-blur-xl px-4 py-6">
+<div class="max-w-3xl mx-auto flex flex-col items-center gap-4">
+<div class="relative w-full">
+<input class="w-full bg-surface-container-low border-none rounded-full px-8 py-4 focus:ring-1 focus:ring-primary/40 text-on-surface placeholder:text-on-surface/30 font-body transition-all" placeholder="Fale com o Twin de Alex..." type="text"/>
+<button class="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 bg-primary rounded-full flex items-center justify-center text-background">
+<span class="material-symbols-outlined" data-icon="north">north</span>
+</button>
+</div>
+<button class="flex items-center gap-2 group transition-opacity hover:opacity-80">
+<span class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface/40 group-hover:text-error transition-colors">Finalizar Sessão</span>
+<span class="material-symbols-outlined !text-[16px] text-on-surface/20 group-hover:text-error/50 transition-colors" data-icon="logout">logout</span>
+</button>
+</div>
+</footer>
+<!-- BottomNavBar (Hidden on desktop based on Shell Rules, but defined as per JSON) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full h-20 flex justify-around items-center px-8 pb-safe bg-[#050508]/80 backdrop-blur-xl z-50 hidden">
+<div class="flex flex-col items-center justify-center text-[#7B9CFF] scale-110">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+<span class="font-label uppercase text-[10px] mt-1">EXPLORE</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#E8E4D9]/40">
+<span class="material-symbols-outlined" data-icon="fingerprint">fingerprint</span>
+<span class="font-label uppercase text-[10px] mt-1">IDENTITY</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#E8E4D9]/40">
+<span class="material-symbols-outlined" data-icon="forum">forum</span>
+<span class="font-label uppercase text-[10px] mt-1">SESSION</span>
+</div>
+<div class="flex flex-col items-center justify-center text-[#E8E4D9]/40">
+<span class="material-symbols-outlined" data-icon="Grain">grain</span>
+<span class="font-label uppercase text-[10px] mt-1">NODES</span>
+</div>
+</nav>
+</body></html>

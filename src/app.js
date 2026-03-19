@@ -7,6 +7,8 @@ const entriesRoutes = require('./routes/entries');
 const graphRoutes = require('./routes/graph');
 const mirrorRoutes = require('./routes/mirror');
 const patternsRoutes = require('./routes/patterns');
+const twinRoutes = require('./routes/twin');
+const twinSharingRoutes = require('./routes/twinSharing');
 
 function buildApp(opts = {}) {
   const app = fastify(opts);
@@ -27,6 +29,7 @@ function buildApp(opts = {}) {
   app.register(mirrorRoutes, { prefix: '/mirror' });
   app.register(patternsRoutes, { prefix: '/patterns' });
   app.register(twinRoutes, { prefix: '/twin' });
+  app.register(twinSharingRoutes, { prefix: '/twin/share' });
 
   // Health check
   app.get('/health', async () => {

@@ -5,7 +5,45 @@ const jwt = require('jsonwebtoken');
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
+const { OAuth2Client } = require('google-auth-library');
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+const oauthClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+
 class AuthService {
+  async googleLogin({ idToken }) {
+    try {
+      const ticket = await oauthClient.verifyIdToken({
+        idToken,
+        audience: GOOGLE_CLIENT_ID,
+      });
+      const payload = ticket.getPayload();
+      const email = payload['email'];
+
+      let user = await prisma.user.findUnique({ where: { email } });
+
+      if (!user) {
+        // Create new user with a random password since they use Google
+        const randomPassword = await bcrypt.hash(Math.random().toString(36), 12);
+        user = await prisma.user.create({
+          data: {
+            email,
+            password: randomPassword,
+          },
+        });
+      }
+
+      const token = this.generateToken(user);
+      await this.createSession(user.id, token);
+
+      return { token, user: { id: user.id, email: user.email } };
+    } catch (error) {
+      console.error('[AuthService] Google login failed:', error);
+      const authError = new Error('Invalid Google token');
+      authError.statusCode = 401;
+      throw authError;
+    }
+  }
+
   async register({ email, password, onboardingAnswers }) {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
@@ -78,8 +116,10 @@ class AuthService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + 30);
 
-    await prisma.session.create({
-      data: {
+    await prisma.session.upsert({
+      where: { token },
+      update: { expiresAt },
+      create: {
         userId,
         token,
         expiresAt,

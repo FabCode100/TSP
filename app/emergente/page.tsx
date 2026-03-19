@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Send, User, Bot, Loader2, Info } from 'lucide-react';
+import { Sparkles, Send, User, Bot, Loader2, Info, Share2, Link, Users } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { getTwinProfile, sendTwinMessage } from '@/actions/db';
 
 export default function Emergente() {
@@ -12,6 +13,7 @@ export default function Emergente() {
   const [isTyping, setIsTyping] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   useEffect(() => {
     getTwinProfile().then(setProfile);
@@ -59,20 +61,24 @@ export default function Emergente() {
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-emergence/10 blur-[120px]" />
       </div>
 
-      <header className="sticky top-0 z-10 bg-void/80 backdrop-blur-md px-6 pt-12 pb-4 border-b border-threshold flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-[28px] text-signal leading-none">Gêmeo Emergente</h1>
-          <div className="font-interface text-[11px] text-whisper mt-1 uppercase">
+      <header className="sticky top-0 z-10 bg-void/80 backdrop-blur-md px-4 md:px-6 pt-12 pb-4 border-b border-threshold flex items-center justify-between">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl md:text-[28px] text-signal leading-none truncate">Gêmeo Emergente</h1>
+          <div className="font-interface text-[10px] md:text-[11px] text-whisper mt-1 uppercase truncate">
             {profile?.status || 'Sintonizando...'}
           </div>
         </div>
-        <motion.div 
-          animate={{ rotate: 360 }} 
-          transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-          className="text-pulse"
-        >
-          <Sparkles size={24} />
-        </motion.div>
+        <div className="flex items-center gap-2 md:gap-4 shrink-0 shadow-sm">
+          <button onClick={() => router.push('/conectar')} className="text-whisper hover:text-pulse transition-colors p-1.5 md:p-2">
+            <Link className="w-[18px] h-[18px] md:w-5 md:h-5" strokeWidth={1.5} />
+          </button>
+          <button onClick={() => router.push('/compartilhar')} className="text-whisper hover:text-pulse transition-colors p-1.5 md:p-2">
+            <Share2 className="w-[18px] h-[18px] md:w-5 md:h-5" strokeWidth={1.5} />
+          </button>
+          <button onClick={() => router.push('/conexoes')} className="text-whisper hover:text-pulse transition-colors p-1.5 md:p-2 relative">
+            <Users className="w-[18px] h-[18px] md:w-5 md:h-5" strokeWidth={1.5} />
+          </button>
+        </div>
       </header>
 
       <div className="flex-1 overflow-y-auto no-scrollbar px-6 py-8" ref={scrollRef}>

@@ -21,17 +21,33 @@ const authenticate = async (request, reply) => {
     }
 
     // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecret');
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET || 'supersecret');
+      console.log('[AuthMiddleware] JWT verified for:', decoded.email);
+    } catch (ve) {
+      console.error('[AuthMiddleware] JWT verification failed:', ve.message);
+      throw ve; // Re-throw to be caught by the outer catch
+    }
 
     // Check if session exists and is valid
     const session = await prisma.session.findUnique({
       where: { token },
     });
 
-    if (!session || session.expiresAt < new Date()) {
+    if (!session) {
+      console.warn('[AuthMiddleware] Session not found in DB for token');
       return reply.status(401).send({
         error: 'Unauthorized',
-        message: 'Session expired or invalid',
+        message: 'Session not found',
+      });
+    }
+
+    if (session.expiresAt < new Date()) {
+      console.warn('[AuthMiddleware] Session expired:', session.expiresAt);
+      return reply.status(401).send({
+        error: 'Unauthorized',
+        message: 'Session expired',
       });
     }
 
@@ -41,7 +57,7 @@ const authenticate = async (request, reply) => {
       email: decoded.email,
     };
   } catch (err) {
-    request.log.error(err);
+    console.error('[AuthMiddleware] Error:', err.message);
     return reply.status(401).send({
       error: 'Unauthorized',
       message: 'Invalid or expired token',

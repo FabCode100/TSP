@@ -14,6 +14,12 @@ async function authRoutes(fastify, options) {
     return { data: { token, user }, error: null, meta: null };
   });
 
+  fastify.post('/google', async (request, reply) => {
+    const { idToken } = request.body;
+    const { token, user } = await authService.googleLogin({ idToken });
+    return { data: { token, user }, error: null, meta: null };
+  });
+
   fastify.post('/logout', { preHandler: [authenticate] }, async (request, reply) => {
     const token = request.headers.authorization.split(' ')[1];
     await authService.logout(token);

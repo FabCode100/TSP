@@ -8,49 +8,115 @@ const MOCK_EMAIL = 'agent_tester_01@symbiosis.ai';
 const MOCK_PASS = 'tsp_secure_agent_2026';
 
 // MVP: Auto-login/register strategy
-async function getAuthToken() {
+export async function getAuthToken() {
   if (typeof window === 'undefined') return '';
-  const token = localStorage.getItem('tsp_token');
-  if (token) return token;
-  return '';
+  return localStorage.getItem('tsp_token') || '';
 }
 
+export async function clearAuthToken() {
+  if (typeof window === 'undefined') return;
+  localStorage.removeItem('tsp_token');
+}
 export async function loginWithGoogleMock() {
-  console.log('[Auth] Attempting to login/register mock user (simulated Google OAuth):', MOCK_EMAIL);
+  console.log('[Auth] Attempting Google Auth via CapGo Social Login');
 
   try {
-    const loginRes = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: MOCK_EMAIL, password: MOCK_PASS })
-    });
-    
-    if (loginRes.ok) {
-      const data = await loginRes.json();
-      const token = data.data.token;
-      if (token) {
-        localStorage.setItem('tsp_token', token);
-        return token;
-      }
+    // Dynamic import to avoid build errors when not running in Capacitor
+    const { SocialLogin } = await import('@capgo/capacitor-social-login');
+
+    // 1. Inicializa o plugin (necessário para configurar o client ID)
+    if (typeof window !== 'undefined') {
+      await SocialLogin.initialize({
+        google: {
+          webClientId: '373842633648-jdjblnkhroppt9rgk4j7bltdb13uivou.apps.googleusercontent.com',
+        },
+      });
     }
 
-    // Fallback to register
-    const regRes = await fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: MOCK_EMAIL, password: MOCK_PASS, onboardingAnswers: [] })
+    // 2. Abre o popup/modal nativo de contas do Google
+    const { result } = await SocialLogin.login({
+      provider: 'google',
+      options: {
+        scopes: ['profile', 'email'],
+      },
     });
-    
-    if (regRes.ok) {
-      const data = await regRes.json();
-      const token = data.data.token;
-      if (token) {
-        localStorage.setItem('tsp_token', token);
-        return token;
+
+    console.log('[Auth] Google Auth Result:', result);
+
+    if (result && 'profile' in result && result.profile) {
+      const idToken = result.idToken;
+
+      // 3. Envia o token verdadeiro para o nosso Fastify validar
+      const loginRes = await fetch(`${API_URL}/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idToken,
+          email: result.profile.email,
+          name: result.profile.name
+        })
+      });
+
+      if (loginRes.ok) {
+        const data = await loginRes.json();
+        const token = data.data.token;
+        if (token) {
+          localStorage.setItem('tsp_token', token);
+          return token;
+        }
       }
     }
   } catch (e) {
-    console.warn('[Auth] Backend connection failed.', e);
+    console.error('[Auth] Google Auth Failed:', e);
+  }
+  return null;
+}
+
+export async function handleGoogleRedirect() {
+  try {
+    const { SocialLogin } = await import('@capgo/capacitor-social-login');
+    console.log('[Auth] Checking for redirect callback...');
+    const result = await SocialLogin.handleRedirectCallback() as any;
+    console.log('[Auth] Redirect Callback Result:', result);
+
+    let idToken = result?.result?.idToken;
+    let email = result?.result && 'profile' in result.result ? result.result.profile?.email : null;
+    let name = result?.result && 'profile' in result.result ? result.result.profile?.name : null;
+
+    // Manual fallback if plugin didn't parse it (happens on some Web flows)
+    if (!idToken && typeof window !== 'undefined' && window.location.hash) {
+      console.log('[Auth] Plugin didn\'t parse fragment, attempting manual parse...');
+      const params = new URLSearchParams(window.location.hash.substring(1));
+      idToken = params.get('id_token');
+      // We don't have the profile here yet, but the backend will verify the idToken and get the email anyway.
+    }
+
+    if (idToken) {
+      console.log('[Auth] ID Token found, sending to backend...');
+      const loginRes = await fetch(`${API_URL}/auth/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          idToken,
+          email,
+          name
+        })
+      });
+
+      if (loginRes.ok) {
+        const data = await loginRes.json();
+        const token = data.data.token;
+        if (token) {
+          console.log('[Auth] Backend login success, saving token.');
+          localStorage.setItem('tsp_token', token);
+          return token;
+        }
+      } else {
+          console.error('[Auth] Backend validation failed:', await loginRes.text());
+      }
+    }
+  } catch (e) {
+    console.error('[Auth] Redirect Callback Error:', e);
   }
   return null;
 }
@@ -64,7 +130,7 @@ async function fetchAPI(endpoint: string, options: RequestInit = {}): Promise<an
   };
 
   let res = await fetch(`${API_URL}${endpoint}`, { ...options, headers });
-  
+
   // If unauthorized, clear token and retry once
   if (res.status === 401 && typeof window !== 'undefined') {
     console.warn('[API] Unauthorized (401). Clearing token and retrying endpoint:', endpoint);
@@ -180,7 +246,7 @@ export async function* sendTwinMessage(message: string) {
   });
 
   if (!response.ok) throw new Error('Failed to connect to Twin');
-  
+
   const reader = response.body?.getReader();
   if (!reader) return;
 
@@ -188,7 +254,7 @@ export async function* sendTwinMessage(message: string) {
   while (true) {
     const { done, value } = await reader.read();
     if (done) break;
-    
+
     const chunk = decoder.decode(value);
     const lines = chunk.split('\n');
     for (const line of lines) {
@@ -198,8 +264,92 @@ export async function* sendTwinMessage(message: string) {
         try {
           const { content } = JSON.parse(dataStr);
           if (content) yield content;
-        } catch (e) {}
+        } catch (e) { }
+    }
+  }
+}
+}
+
+// =============================================
+// TWIN SHARING API
+// =============================================
+
+export async function createShareToken(permissionLevel: string, role: string, roleInstruction: string, expiresAt?: string) {
+  return fetchAPI('/twin/share', {
+    method: 'POST',
+    body: JSON.stringify({ permissionLevel, role, roleInstruction, expiresAt }),
+  });
+}
+
+export async function listShareTokens() {
+  return fetchAPI('/twin/share/tokens');
+}
+
+export async function revokeShareToken(tokenId: string) {
+  return fetchAPI(`/twin/share/tokens/${tokenId}`, { method: 'DELETE' });
+}
+
+export async function getShareLogs() {
+  return fetchAPI('/twin/share/logs');
+}
+
+export async function getConnections() {
+  return fetchAPI('/twin/share/connections');
+}
+
+export async function validateShareToken(token: string) {
+  const res = await fetch(`${API_URL}/twin/share/validate/${token}`);
+  if (!res.ok) return null;
+  const json = await res.json();
+  return json.data;
+}
+
+export async function getSharedTwinProfile(token: string) {
+  const res = await fetch(`${API_URL}/twin/share/explore/${token}`);
+  if (!res.ok) return null;
+  const json = await res.json();
+  return json.data;
+}
+
+export async function* sendSharedTwinMessage(token: string, message: string) {
+  const response = await fetch(`${API_URL}/twin/share/explore/${token}/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!response.ok) throw new Error('Failed to connect to shared Twin');
+
+  const reader = response.body?.getReader();
+  if (!reader) return;
+
+  const decoder = new TextDecoder();
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    const chunk = decoder.decode(value);
+    const lines = chunk.split('\n');
+    for (const line of lines) {
+      if (line.startsWith('data: ')) {
+        const dataStr = line.replace('data: ', '').trim();
+        if (dataStr === '[DONE]') return;
+        try {
+          const { content } = JSON.parse(dataStr);
+          if (content) yield content;
+        } catch (e) { }
       }
     }
   }
+}
+
+export async function endSharedSession(token: string, accessorName: string, duration: number, messageCount: number) {
+  const res = await fetch(`${API_URL}/twin/share/explore/${token}/end`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ accessorName, duration, messageCount }),
+  });
+  if (!res.ok) return null;
+  const json = await res.json();
+  return json.data;
 }

@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Connect Twin - Symbiosis Protocol</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&amp;family=DM+Mono:wght@300;400;500&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-primary": "#002a78",
+              "surface-container": "#1f1f23",
+              "on-background": "#e5e1e7",
+              "on-primary-container": "#003086",
+              "on-error": "#690005",
+              "surface-container-highest": "#353439",
+              "secondary-container": "#4f319c",
+              "outline": "#8e909e",
+              "on-secondary-fixed": "#21005e",
+              "inverse-primary": "#3559b7",
+              "primary-fixed": "#dbe1ff",
+              "surface-container-high": "#2a292e",
+              "on-tertiary-fixed": "#1c1c15",
+              "on-secondary": "#381385",
+              "inverse-surface": "#e5e1e7",
+              "on-error-container": "#ffdad6",
+              "surface-container-low": "#1b1b1f",
+              "surface": "#050508",
+              "on-surface-variant": "#c4c6d4",
+              "on-secondary-container": "#bea8ff",
+              "error": "#ffb4ab",
+              "tertiary-fixed": "#e6e2d7",
+              "inverse-on-surface": "#303034",
+              "tertiary-container": "#a3a096",
+              "surface-container-lowest": "#0e0e12",
+              "secondary-fixed": "#e8ddff",
+              "tertiary": "#cac6bc",
+              "on-surface": "#e8e4D9",
+              "on-primary-fixed-variant": "#14409e",
+              "background": "#050508",
+              "surface-tint": "#b4c5ff",
+              "on-tertiary-container": "#383730",
+              "error-container": "#93000a",
+              "surface-dim": "#131317",
+              "on-tertiary": "#323129",
+              "primary-container": "#7b9cff",
+              "tertiary-fixed-dim": "#cac6bc",
+              "secondary-fixed-dim": "#cebdff",
+              "on-tertiary-fixed-variant": "#48473f",
+              "on-secondary-fixed-variant": "#4f319c",
+              "surface-bright": "#39393d",
+              "primary": "#7B9CFF",
+              "surface-variant": "#353439",
+              "primary-fixed-dim": "#b4c5ff",
+              "outline-variant": "#444652",
+              "on-primary-fixed": "#00174b",
+              "secondary": "#A78BFA"
+            },
+            fontFamily: {
+              "headline": ["Cormorant Garamond", "serif"],
+              "body": ["Instrument Serif", "serif"],
+              "label": ["DM Mono", "monospace"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-effect {
+            background: rgba(123, 156, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .hex-input-glow:focus-within {
+            box-shadow: 0 0 20px rgba(123, 156, 255, 0.15);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30 min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-[#050508] flex justify-between items-center w-full px-6 py-4 fixed top-0 z-50 transition-colors duration-300">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#7B9CFF] cursor-pointer hover:opacity-80 transition-opacity" data-icon="arrow_back">arrow_back</span>
+<h1 class="font-headline text-2xl font-light italic text-[#E8E4D9]">Connect Twin</h1>
+</div>
+<div class="flex gap-6 items-center">
+<span class="font-label tracking-tighter uppercase text-[10px] text-[#E8E4D9]/60">Protocol: V.2.0.4</span>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-24 pb-32 px-6 max-w-2xl mx-auto w-full">
+<!-- Header Section -->
+<section class="mb-12 text-center">
+<h2 class="font-headline text-5xl mb-4 leading-tight">Enter Access Protocol</h2>
+<p class="text-on-surface/60 font-body text-lg italic">Provide the unique hexadecimal signature to synchronize with your emergent twin.</p>
+</section>
+<!-- Input Section -->
+<section class="mb-16 space-y-8">
+<div class="flex justify-center gap-3 md:gap-4 font-label">
+<!-- Segmented Hex Input -->
+<div class="w-12 h-16 md:w-16 md:h-20 bg-surface-container-low border border-outline-variant/10 rounded-xl flex items-center justify-center text-2xl text-primary hex-input-glow transition-all">
+<span class="opacity-30">_</span>
+</div>
+<div class="w-12 h-16 md:w-16 md:h-20 bg-surface-container-low border border-outline-variant/10 rounded-xl flex items-center justify-center text-2xl text-primary hex-input-glow transition-all">
+<span class="opacity-30">_</span>
+</div>
+<div class="w-12 h-16 md:w-16 md:h-20 bg-surface-container-low border border-outline-variant/10 rounded-xl flex items-center justify-center text-2xl text-primary hex-input-glow transition-all">
+<span class="opacity-30">_</span>
+</div>
+<div class="flex items-center text-primary/30 mx-1">
+<span class="material-symbols-outlined" data-icon="horizontal_rule">horizontal_rule</span>
+</div>
+<div class="w-12 h-16 md:w-16 md:h-20 bg-surface-container-low border border-outline-variant/10 rounded-xl flex items-center justify-center text-2xl text-primary hex-input-glow transition-all">
+<span class="opacity-30">_</span>
+</div>
+<div class="w-12 h-16 md:w-16 md:h-20 bg-surface-container-low border border-outline-variant/10 rounded-xl flex items-center justify-center text-2xl text-primary hex-input-glow transition-all">
+<span class="opacity-30">_</span>
+</div>
+<div class="w-12 h-16 md:w-16 md:h-20 bg-surface-container-low border border-outline-variant/10 rounded-xl flex items-center justify-center text-2xl text-primary hex-input-glow transition-all">
+<span class="opacity-30">_</span>
+</div>
+</div>
+<!-- Error State (Hidden) -->
+<div class="h-6 text-center opacity-0 group-[.error]:opacity-100 transition-opacity">
+<p class="font-label text-xs uppercase tracking-widest text-error">Invalid Signature Detected. Please verify credentials.</p>
+</div>
+<!-- Connect Button -->
+<div class="flex flex-col items-center">
+<button class="relative group px-12 py-4 bg-primary text-on-primary font-label text-sm uppercase tracking-widest rounded-full transition-all hover:scale-[1.02] active:scale-95 overflow-hidden">
+<span class="relative z-10">Conectar</span>
+<!-- Pulse Effect -->
+<div class="absolute inset-0 bg-secondary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity"></div>
+</button>
+</div>
+</section>
+<!-- Recent Connections -->
+<section>
+<div class="flex justify-between items-end mb-8">
+<h3 class="font-headline text-3xl italic">Recent Archives</h3>
+<span class="font-label text-[10px] text-on-surface/40 uppercase tracking-tighter">Total: 03 Entities</span>
+</div>
+<div class="space-y-4">
+<!-- Archive Card 1 -->
+<div class="group flex items-center p-5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full glass-effect flex items-center justify-center mr-5 border border-primary/10">
+<span class="material-symbols-outlined text-secondary text-xl" data-icon="fingerprint">fingerprint</span>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline text-xl text-on-surface leading-tight">Aetheris-IX</h4>
+<div class="flex items-center gap-3">
+<span class="font-label text-[10px] text-primary uppercase tracking-widest">Active Link</span>
+<span class="w-1 h-1 rounded-full bg-on-surface/20"></span>
+<span class="font-label text-[10px] text-on-surface/40 uppercase">Accessed: 14:22 UTC</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface/20 group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Archive Card 2 -->
+<div class="group flex items-center p-5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mr-5">
+<span class="material-symbols-outlined text-on-surface/40 text-xl" data-icon="grain">grain</span>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline text-xl text-on-surface leading-tight">Solstice_Mirror</h4>
+<div class="flex items-center gap-3">
+<span class="font-label text-[10px] text-on-surface/40 uppercase tracking-widest">Dormant</span>
+<span class="w-1 h-1 rounded-full bg-on-surface/20"></span>
+<span class="font-label text-[10px] text-on-surface/40 uppercase">Accessed: 2 days ago</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface/20 group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+<!-- Archive Card 3 -->
+<div class="group flex items-center p-5 bg-surface-container-low hover:bg-surface-container-high rounded-xl transition-all cursor-pointer">
+<div class="w-12 h-12 rounded-full bg-surface-container-highest flex items-center justify-center mr-5">
+<span class="material-symbols-outlined text-on-surface/40 text-xl" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div class="flex-grow">
+<h4 class="font-headline text-xl text-on-surface leading-tight">Nebula_042</h4>
+<div class="flex items-center gap-3">
+<span class="font-label text-[10px] text-on-surface/40 uppercase tracking-widest">Dormant</span>
+<span class="w-1 h-1 rounded-full bg-on-surface/20"></span>
+<span class="font-label text-[10px] text-on-surface/40 uppercase">Accessed: May 12</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-surface/20 group-hover:text-primary transition-colors" data-icon="chevron_right">chevron_right</span>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-[#050508]/80 backdrop-blur-xl flex justify-around items-center px-8 pb-8 pt-4 rounded-t-[32px] shadow-[0_-4px_40px_rgba(123,156,255,0.1)]">
+<a class="flex flex-col items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="auto_awesome">auto_awesome</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#7B9CFF] scale-110 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="fingerprint" style="font-variation-settings: 'FILL' 1;">fingerprint</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="Grain">grain</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="settings">settings</span>
+</a>
+</nav>
+<!-- Aesthetic Decorative Element -->
+<div class="fixed top-0 left-0 w-full h-full pointer-events-none overflow-hidden -z-10">
+<div class="absolute -top-1/4 -right-1/4 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px]"></div>
+<div class="absolute -bottom-1/4 -left-1/4 w-[600px] h-[600px] bg-secondary/5 rounded-full blur-[120px]"></div>
+</div>
+</body></html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Share Twin | Symbiosis Protocol</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&amp;family=DM+Mono:wght@300;400;500&amp;family=Newsreader:opsz,wght@6-72,300;6-72,400&amp;family=Noto+Serif:wght@300;400&amp;family=Space+Grotesk:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed-dim": "#cebdff",
+                        "on-tertiary": "#323129",
+                        "on-surface-variant": "#c4c6d4",
+                        "on-primary": "#002a78",
+                        "on-primary-container": "#003086",
+                        "surface-container-highest": "#353439",
+                        "tertiary": "#cac6bc",
+                        "secondary-container": "#4f319c",
+                        "primary": "#b4c5ff",
+                        "on-secondary-container": "#bea8ff",
+                        "on-secondary-fixed-variant": "#4f319c",
+                        "surface-container-low": "#1b1b1f",
+                        "on-tertiary-fixed-variant": "#48473f",
+                        "on-primary-fixed": "#00174b",
+                        "on-background": "#e5e1e7",
+                        "inverse-on-surface": "#303034",
+                        "tertiary-fixed": "#e6e2d7",
+                        "surface-dim": "#131317",
+                        "tertiary-fixed-dim": "#cac6bc",
+                        "secondary-fixed": "#e8ddff",
+                        "tertiary-container": "#a3a096",
+                        "primary-container": "#7b9cff",
+                        "secondary": "#cebdff",
+                        "on-surface": "#e5e1e7",
+                        "surface-container": "#1f1f23",
+                        "surface-bright": "#39393d",
+                        "surface-variant": "#353439",
+                        "surface-container-high": "#2a292e",
+                        "primary-fixed": "#dbe1ff",
+                        "primary-fixed-dim": "#b4c5ff",
+                        "error": "#ffb4ab",
+                        "on-tertiary-container": "#383730",
+                        "on-error": "#690005",
+                        "inverse-primary": "#3559b7",
+                        "outline-variant": "#444652",
+                        "surface-tint": "#b4c5ff",
+                        "on-primary-fixed-variant": "#14409e",
+                        "on-tertiary-fixed": "#1c1c15",
+                        "background": "#131317",
+                        "on-secondary-fixed": "#21005e",
+                        "surface-container-lowest": "#0e0e12",
+                        "on-secondary": "#381385",
+                        "on-error-container": "#ffdad6",
+                        "inverse-surface": "#e5e1e7",
+                        "outline": "#8e909e",
+                        "surface": "#131317",
+                        "error-container": "#93000a"
+                    },
+                    fontFamily: {
+                        "headline": ["Cormorant Garamond", "serif"],
+                        "body": ["Instrument Serif", "serif"],
+                        "label": ["DM Mono", "monospace"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            background-color: #050508;
+            color: #E8E4D9;
+            -webkit-font-smoothing: antialiased;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(123, 156, 255, 0.03);
+            backdrop-filter: blur(20px);
+        }
+        .mono-label {
+            font-family: 'DM Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            font-size: 0.65rem;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen flex flex-col font-body">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#050508] transition-opacity duration-200">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-none">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-[#7B9CFF] cursor-pointer hover:opacity-80 transition-opacity">arrow_back</span>
+<h1 class="font-headline font-light text-2xl text-[#E8E4D9]">Share Twin</h1>
+</div>
+<div class="style_brand_logo text-[#E8E4D9] font-serif italic text-lg opacity-40">TSP</div>
+</div>
+<div class="bg-[#131317] h-px w-full opacity-50"></div>
+</header>
+<main class="flex-grow pt-24 pb-32 px-6 max-w-2xl mx-auto w-full space-y-12">
+<!-- Section 1: Create Share Token -->
+<section class="space-y-8">
+<div class="flex flex-col gap-1">
+<span class="mono-label text-primary-container">Protocol 01</span>
+<h2 class="font-headline text-3xl text-on-surface">Create Share Token</h2>
+</div>
+<div class="space-y-6">
+<!-- Permission Level -->
+<div class="space-y-3">
+<label class="mono-label text-outline">Permission Level</label>
+<div class="grid grid-cols-3 gap-2 p-1 bg-surface-container-low rounded-xl">
+<button class="py-2 text-[10px] mono-label bg-surface-container-highest text-primary-container rounded-lg border border-primary/20">Public</button>
+<button class="py-2 text-[10px] mono-label text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg">Trusted</button>
+<button class="py-2 text-[10px] mono-label text-on-surface-variant hover:bg-surface-container-high transition-colors rounded-lg">Intimate</button>
+</div>
+</div>
+<!-- Role Description -->
+<div class="space-y-3">
+<label class="mono-label text-outline">Role Description</label>
+<textarea class="w-full bg-surface-container-low border-none rounded-xl p-4 text-on-surface placeholder:text-outline-variant focus:ring-1 focus:ring-primary/30 min-h-[100px] text-sm" placeholder="e.g., Professional Advisor"></textarea>
+</div>
+<!-- Expiry -->
+<div class="space-y-3">
+<label class="mono-label text-outline">Temporal Expiry</label>
+<select class="w-full bg-surface-container-low border-none rounded-xl p-4 text-on-surface appearance-none text-sm">
+<option>Never</option>
+<option>1 Hour</option>
+<option>24 Hours</option>
+<option>7 Days</option>
+<option>Custom Date...</option>
+</select>
+</div>
+<!-- Generate Button -->
+<button class="w-full py-5 bg-primary-container text-on-primary-container font-headline text-xl rounded-xl relative overflow-hidden group hover:opacity-90 transition-all active:scale-[0.98]">
+<span class="relative z-10">Generate Token</span>
+<div class="absolute inset-0 bg-white/10 opacity-0 group-active:opacity-100 transition-opacity"></div>
+</button>
+</div>
+</section>
+<!-- Section 2: Active Tokens -->
+<section class="space-y-8">
+<div class="flex justify-between items-end">
+<div class="flex flex-col gap-1">
+<span class="mono-label text-secondary">Protocol 02</span>
+<h2 class="font-headline text-3xl text-on-surface">Active Synapses</h2>
+</div>
+<span class="mono-label text-outline-variant">3 Active</span>
+</div>
+<div class="grid gap-4">
+<!-- Token Card 1 -->
+<div class="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/5 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<h3 class="font-headline text-xl">Legal Counsel</h3>
+</div>
+<p class="mono-label text-[10px] text-outline">Permission: Trusted</p>
+</div>
+<div class="text-right">
+<p class="mono-label text-[10px] text-outline">Expires</p>
+<p class="text-xs text-on-surface-variant">Oct 24, 2023</p>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span class="mono-label">Copy Link</span>
+</button>
+<button class="px-4 flex items-center justify-center py-2.5 border border-error/20 text-error rounded-lg hover:bg-error/5 transition-colors">
+<span class="material-symbols-outlined text-sm">block</span>
+</button>
+</div>
+</div>
+<!-- Token Card 2 -->
+<div class="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/5 space-y-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+<h3 class="font-headline text-xl">Biometric Analyst</h3>
+</div>
+<p class="mono-label text-[10px] text-outline">Permission: Intimate</p>
+</div>
+<div class="text-right">
+<p class="mono-label text-[10px] text-outline">Expires</p>
+<p class="text-xs text-on-surface-variant">Never</p>
+</div>
+</div>
+<div class="flex gap-2 pt-2">
+<button class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-surface-container-high rounded-lg hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-sm">content_copy</span>
+<span class="mono-label">Copy Link</span>
+</button>
+<button class="px-4 flex items-center justify-center py-2.5 border border-error/20 text-error rounded-lg hover:bg-error/5 transition-colors">
+<span class="material-symbols-outlined text-sm">block</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Section 3: Access Log -->
+<section class="space-y-8">
+<div class="flex flex-col gap-1">
+<span class="mono-label text-tertiary">Protocol 03</span>
+<h2 class="font-headline text-3xl text-on-surface">Access Log</h2>
+</div>
+<div class="space-y-px bg-outline-variant/10 rounded-2xl overflow-hidden">
+<!-- Log Entry 1 -->
+<div class="bg-surface-container-lowest p-4 flex justify-between items-center group hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-xl">person_search</span>
+</div>
+<div>
+<p class="text-sm text-on-surface">Accessed by <span class="text-primary-container">Legal Counsel</span></p>
+<p class="mono-label text-[9px] text-outline">Read: Identity Core</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant">2m ago</p>
+<p class="mono-label text-[8px] text-outline-variant">Duration: 45s</p>
+</div>
+</div>
+<!-- Log Entry 2 -->
+<div class="bg-surface-container-lowest p-4 flex justify-between items-center group hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-outline text-xl">visibility_off</span>
+</div>
+<div>
+<p class="text-sm text-on-surface">Accessed by <span class="italic text-outline">Unknown Entity</span></p>
+<p class="mono-label text-[9px] text-outline">Ping: Connection Test</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant">1h ago</p>
+<p class="mono-label text-[8px] text-outline-variant">Result: Denied</p>
+</div>
+</div>
+<!-- Log Entry 3 -->
+<div class="bg-surface-container-lowest p-4 flex justify-between items-center group hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-xl">analytics</span>
+</div>
+<div>
+<p class="text-sm text-on-surface">Accessed by <span class="text-primary-container">Biometric Analyst</span></p>
+<p class="mono-label text-[9px] text-outline">Sync: Health Stream</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-[10px] text-on-surface-variant">4h ago</p>
+<p class="mono-label text-[8px] text-outline-variant">Duration: 12m</p>
+</div>
+</div>
+</div>
+<button class="w-full py-4 border border-outline-variant/10 rounded-xl mono-label text-outline-variant hover:text-on-surface-variant transition-colors text-xs">
+                View Full Audit History
+            </button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full h-20 bg-[#050508]/80 backdrop-blur-xl flex justify-around items-center px-8 pb-safe z-50 rounded-t-3xl border-t border-[#444652]/15 shadow-[0_-4px_40px_rgba(123,156,255,0.1)]">
+<a class="flex items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">auto_awesome</span>
+</a>
+<a class="flex items-center justify-center text-[#7B9CFF] scale-110 relative after:content-[''] after:absolute after:-bottom-2 after:w-1 after:h-1 after:bg-[#7B9CFF] after:rounded-full animate-pulse" href="#">
+<span class="material-symbols-outlined">share</span>
+</a>
+<a class="flex items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">history</span>
+</a>
+<a class="flex items-center justify-center text-[#E8E4D9]/40 hover:text-[#A78BFA] transition-colors duration-300" href="#">
+<span class="material-symbols-outlined">settings</span>
+</a>
+</nav>
+</body></html>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { CapacitorUpdater } from '@capgo/capacitor-updater';
+import { Toast } from '@capacitor/toast';
 import { BottomTabBar } from './BottomTabBar';
 import { FABSheet } from './FABSheet';
 import { usePathname } from 'next/navigation';
@@ -22,11 +23,21 @@ function AppContent({ children }: { children: React.ReactNode }) {
       // Check for updates every time the app opens
       const checkForUpdate = async () => {
         try {
-          // stats for capgo cloud
-          await CapacitorUpdater.download({
+          const update = await CapacitorUpdater.download({
             url: 'https://api.capgo.app/updates/latest',
             version: 'latest',
           });
+          
+          if (update) {
+            await Toast.show({
+              text: 'Nova atualização baixada! Reinicie o app para aplicar.',
+              duration: 'long',
+              position: 'bottom'
+            });
+            
+            // Optionally auto-set the update for next boot
+            await CapacitorUpdater.set(update);
+          }
         } catch (e) {
           console.log('[Updater] No update found or error:', e);
         }

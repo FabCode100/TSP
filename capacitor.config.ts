@@ -5,10 +5,10 @@ const config: CapacitorConfig = {
   appName: 'TSP',
   webDir: 'out',
   plugins: {
-    GoogleAuth: {
-      scopes: ["profile", "email"],
-      serverClientId: "SEU_CLIENT_ID_AQUI.apps.googleusercontent.com",
-      forceCodeForRefreshToken: true
+    SocialLogin: {
+      google: {
+        webClientId: "373842633648-jdjblnkhroppt9rgk4j7bltdb13uivou.apps.googleusercontent.com"
+      }
     }
   }
 };

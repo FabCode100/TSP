@@ -29,9 +29,8 @@ jobs:
 
       - name: CapGo Deploy
         run: |
-          npx @capgo/cli@latest bundle upload \
+          npx @capgo/cli@latest bundle upload io.symbiosis.protocol \
             --apikey ${{ secrets.CAPGO_TOKEN }} \
             --path out/ \
             --channel production \
-            --bundle $(node -p "require('./package.json').version") \
-            io.symbiosis.protocol
+            --bundle $(node -p "require('./package.json').version")

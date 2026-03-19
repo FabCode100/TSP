@@ -40,7 +40,7 @@ jobs:
         run: |
           npx @capgo/cli@latest bundle upload \
             --apikey ${{ secrets.CAPGO_TOKEN }} \
-            --app-id io.symbiosis.protocol \
             --path out/ \
             --channel production \
-            --bundle-id $(node -p "require('./package.json').version")
+            --bundle $(node -p "require('./package.json').version") \
+            io.symbiosis.protocol

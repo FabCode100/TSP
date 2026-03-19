@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { Capacitor } from '@capacitor/core';
+import { CapacitorUpdater } from '@capgo/capacitor-updater';
 import { BottomTabBar } from './BottomTabBar';
 import { FABSheet } from './FABSheet';
 import { usePathname } from 'next/navigation';
@@ -12,6 +14,27 @@ function AppContent({ children }: { children: React.ReactNode }) {
   const [isFABOpen, setIsFABOpen] = useState(false);
   const pathname = usePathname();
   const { addEntry } = useAppContext();
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      CapacitorUpdater.notifyAppReady();
+      
+      // Check for updates every time the app opens
+      const checkForUpdate = async () => {
+        try {
+          // stats for capgo cloud
+          await CapacitorUpdater.download({
+            url: 'https://api.capgo.app/updates/latest',
+            version: 'latest',
+          });
+        } catch (e) {
+          console.log('[Updater] No update found or error:', e);
+        }
+      };
+
+      checkForUpdate();
+    }
+  }, []);
 
   const handleSave = async (text: string, type: string) => {
     await addEntry({

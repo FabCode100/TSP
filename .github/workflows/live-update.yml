@@ -1,0 +1,46 @@
+name: Live Update (CapGo OTA)
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app/**'
+      - 'components/**'
+      - 'lib/**'
+      - 'actions/**'
+      - 'hooks/**'
+      - 'public/**'
+      - 'next.config.mjs'
+      - 'package.json'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
+          NEXT_PUBLIC_GROQ_API_KEY: ${{ secrets.NEXT_PUBLIC_GROQ_API_KEY }}
+
+      - name: CapGo Deploy
+        run: |
+          npx @capgo/cli@latest bundle upload \
+            --apikey ${{ secrets.CAPGO_TOKEN }} \
+            --app-id io.symbiosis.protocol \
+            --path out/ \
+            --channel production \
+            --bundle-id $(node -p "require('./package.json').version")

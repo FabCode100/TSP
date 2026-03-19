@@ -27,17 +27,21 @@ jobs:
           NEXT_PUBLIC_API_URL: ${{ secrets.NEXT_PUBLIC_API_URL }}
           NEXT_PUBLIC_GROQ_API_KEY: ${{ secrets.NEXT_PUBLIC_GROQ_API_KEY }}
 
+      - name: Set Bundle Version
+        run: |
+          V=$(node -p "const v=require('./package.json').version.split('.'); \`\${v[0]}.\${v[1]}.${{ github.run_number }}\`")
+          echo "CAPGO_BUNDLE=$V" >> $GITHUB_ENV
+
       - name: CapGo Deploy
         env:
           CAPGO_TOKEN: ${{ secrets.CAPGO_TOKEN }}
         run: |
           if [ -z "$CAPGO_TOKEN" ]; then
-            echo "Error: CAPGO_TOKEN is not set in GitHub Secrets!"
+            echo "Error: CAPGO_TOKEN is not set!"
             exit 1
           fi
-          npx @capgo/cli@latest app add io.symbiosis.protocol --apikey "$CAPGO_TOKEN" || true
           npx @capgo/cli@latest bundle upload io.symbiosis.protocol \
             --apikey "$CAPGO_TOKEN" \
             --path out/ \
             --channel production \
-            --bundle $(node -p "const v=require('./package.json').version.split('.'); console.log(\`\${v[0]}.\${v[1]}.${{ github.run_number }}\`)")
+            --bundle "$CAPGO_BUNDLE"

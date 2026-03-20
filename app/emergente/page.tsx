@@ -16,6 +16,8 @@ export default function Emergente() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { isRecording, isTranscribing, isSpeaking, startRecording, stopRecording, speak, stopSpeaking } = useAudioRecorder();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
 
   useEffect(() => {
     getTwinProfile().then(setProfile);
@@ -48,6 +50,11 @@ export default function Emergente() {
           return newMsgs;
         });
       }
+
+      // 4. Trigger Avatar Generation after speech is ready
+      if (currentResponse && profile?.photo_url) {
+        generateAvatar(currentResponse, profile.photo_url);
+      }
     } catch (error) {
       setMessages(prev => [...prev, { role: 'twin', content: 'Desculpe, minha conexão com seu núcleo falhou momentaneamente.' }]);
     } finally {
@@ -64,6 +71,46 @@ export default function Emergente() {
     } else {
       await startRecording();
     }
+  };
+
+  const generateAvatar = async (text: string, photoUrl: string) => {
+    setIsGeneratingAvatar(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/twin/avatar/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, photoUrl })
+      });
+      const data = await res.json();
+      if (data.success) {
+        pollAvatarStatus(data.jobId);
+      }
+    } catch (e) {
+      console.error('Failed to trigger avatar:', e);
+      setIsGeneratingAvatar(false);
+    }
+  };
+
+  const pollAvatarStatus = async (jobId: string) => {
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/twin/avatar/status/${jobId}`);
+        const result = await res.json();
+        if (result.success && result.data.status === 'completed') {
+          setAvatarUrl(result.data.video_url);
+          setIsGeneratingAvatar(false);
+          clearInterval(interval);
+        } else if (result.success && result.data.status === 'failed') {
+          setIsGeneratingAvatar(false);
+          clearInterval(interval);
+        }
+      } catch (e) {
+        console.error('Polling error:', e);
+      }
+    }, 3000);
+
+    // Stop polling after 2 minutes anyway
+    setTimeout(() => clearInterval(interval), 120000);
   };
 
   return (
@@ -130,10 +177,27 @@ export default function Emergente() {
               className={`mb-6 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div className={`max-w-[85%] flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden ${
                   msg.role === 'user' ? 'bg-threshold text-whisper' : 'bg-membrane border border-pulse/30 text-pulse'
                 }`}>
-                  {msg.role === 'user' ? <User size={14} /> : <Bot size={14} />}
+                  {msg.role === 'user' ? (
+                    <User size={16} />
+                  ) : (
+                    avatarUrl && idx === messages.length - 1 ? (
+                      <video 
+                        src={avatarUrl} 
+                        autoPlay 
+                        loop 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      profile?.photo_url ? (
+                        <img src={profile.photo_url} className="w-full h-full object-cover" alt="Twin" />
+                      ) : (
+                        <Bot size={16} />
+                      )
+                    )
+                  )}
                 </div>
                 <div className={`p-4 rounded-[20px] font-body text-[16px] leading-relaxed ${
                   msg.role === 'user' 

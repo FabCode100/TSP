@@ -2,24 +2,24 @@
 <img width="200" height="200" alt="TSP Logo" src="./public/icon-512.png" />
 
 # The Symbiosis Protocol (TSP)
-### An Expanded Cognitive Identity Platform (Mobile Ready)
+### Uma Plataforma de Identidade Cognitiva Expandida (Mobile Ready)
 </div>
 
 ---
 
-## 👁️ The Vision
-**The Symbiosis Protocol (TSP)** is more than an application; it is a technological response to the philosophical problem of identity. Built on the principle of the **Ship of Theseus**, TSP posits that identity is not a fixed point, but a pattern that persists through change.
+## 👁️ A Visão
+**The Symbiosis Protocol (TSP)** é mais do que um aplicativo; é uma resposta tecnológica ao problema filosófico da identidade. Baseado no princípio do **Navio de Teseu**, o TSP postula que a identidade não é um ponto fixo, mas um padrão que persiste através da mudança.
 
-Our mission is to preserve, organize, and project the semantic structure of a human identity beyond the physical limits of time and presence.
+Nossa missão é preservar, organizar e projetar a estrutura semântica de uma identidade humana além dos limites físicos de tempo e presença.
 
 ---
 
-## 🎨 Design & Interface Showcase
+## 🎨 Showcase de Design & Interface
 
-Explore the visual evolution of the TSP identity engine.
+Explore a evolução visual do motor de identidade TSP.
 
 <div align="center">
-  <h3>Identity & Evolution</h3>
+  <h3>Identidade & Evolução</h3>
   <img src="https://lh3.googleusercontent.com/aida/ADBb0ug6XQPMRozjB2TJwrjjJS6oPgrQ9oMaBb23Z_q6JY-2LblpxImxtw3T1PZ5fO8tfJ0ecUE3CbDJ4pQklZ1ZgwmI5cyiCLF-2MjYuWXqN-zFQ-ng8k87lMw5B2FI0niYAbsDAEkyXs9Z-dFvAhQGPf9--lVfwFM0X94dyWp6NMnFY1TwRFeAK8_h2ezl4upfVXkyeyqmjMWq2skS1qosb63dCIK_8VjRu_moRccLzSJtUDN1XZOuSicC89X7" width="23%" />
   <img src="./stitch_tsp_onboarding_boas_vindas/twin_active_evolution/screen.png" width="23%" />
   <img src="https://lh3.googleusercontent.com/aida/ADBb0ugs45kbj-DOQxhRotvi2XK6z8sbXsvPU1XCPdIZXMQHvu5L5wEbhDo6Zx-O-OpcFzy85ELRQuGXG4yfRVk3o_swwBEIFCT97SGhZecmja_OfiaG9HOjBnGVocXPGRcHPAlpBQQu0gz65isYhiJEN2lXZd1Beeo62PzUbZgsfY2rfSTAiU4sQ1TrspEKrTx08dpnk9u0qeNUQDwJ9_os5AQ4j283wfWZPCD2VNt2VkNXa7hEfU_pfKZ9fStF" width="23%" />
@@ -27,7 +27,7 @@ Explore the visual evolution of the TSP identity engine.
 </div>
 
 <div align="center">
-  <h3>Social & Cognitive Mirroring</h3>
+  <h3>Espelhamento Social & Cognitivo</h3>
   <img src="https://lh3.googleusercontent.com/aida/ADBb0uj4f-vqyHETqfO1OKM2AnI26CQT-14TnCJOgsRgRyOjOY-KUaPLmhYaWm6tQZ_wAkfLQ-85dVRU8Q9-UHAizq2iuyIpKFomYcNJqscpCrbzhhRqOJXvnwImhij4iDjhei8Vfa3LgsXCTf2glmjgOmhED5EiwgOtpzSk4hryUpp8L-pLQsYh3aEz8ObyqvKOtR6se4-PpLhymb2th0cFeQKS7Ke0oy6JJm379r35VkfucGJH5b-bL7pVyPU" width="31%" />
   <img src="./newtwinsModuleDesign/connect_with_twin/screen.png" width="31%" />
   <img src="https://lh3.googleusercontent.com/aida/ADBb0ugv_0pgeogxOi2Ep2yV-GaxSNGfrOaY2YQA6X6jv_gBUSF_3VKCBqrXVMlnAq3mjzja3M4nnvxPB2cWGmJsSmwWngrG_8GIAVo1mn08lGfZyX-Q7YcB_cJEpehh67WOvxnu57HTFIc8pm-xbqIvguESVMVIMLq96W2YWqA3k0GB8GuwFt-V6JCJplBEt9-9zsNx08k4AzteX98e3IC6NC1H8jgPUFiUjoQ7dXjCyvHZth3jvrb-REU6qgI" width="31%" />
@@ -35,91 +35,91 @@ Explore the visual evolution of the TSP identity engine.
 
 ---
 
-## 🚀 The Three Layers
+## 🚀 As Três Camadas
 
-### 1. Continuity OS (Active)
-The foundation layer. A personal operating system that captures memories, reflections, and values.
-- **Semantic Engine**: Extracts concept-graphs and deep identity patterns.
-- **Continuity Graph**: A dynamic visual representation of your evolving self.
-- **Reflective Interface**: Dialogue with your own accumulated consciousness pattern.
+### 1. Continuity OS (Ativo)
+A camada fundamental. Um sistema operacional pessoal que captura memórias, reflexões e valores.
+- **Motor Semântico**: Extrai grafos de conceitos e padrões profundos de identidade.
+- **Grafo de Continuidade**: Uma representação visual dinâmica do seu eu em evolução.
+- **Interface Reflexiva**: Diálogo com seu próprio padrão de consciência acumulado.
 
-### 2. Emergent Twin (Active)
-The operational extension. A personal AI twin that projects your cognitive patterns into the world.
-- **Multi-Level Access**: Public (Social), Trusted (Professional), and Intimate (Personal).
-- **Cognitive Mirroring**: Responses aligned with your vocabulary, style, and values.
-- **Sync Logs**: Real-time monitoring of your Twin's interactions.
+### 2. Gêmeo Emergente (Ativo)
+A extensão operacional. Um gêmeo de IA pessoal que projeta seus padrões cognitivos no mundo.
+- **Acesso Multinível**: Público (Social), Confiável (Profissional) e Íntimo (Pessoal).
+- **Espelhamento Cognitivo**: Respostas alinhadas com seu vocabulário, estilo e valores.
+- **Logs de Sincronia**: Monitoramento em tempo real das interações do seu Gêmeo.
 
-### 3. Symbiosis Core (Future)
-The horizon of human-AI integration.
-- **BCI Sync**: Long-term brain-computer interface integration.
-- **Vectorized Memory**: Real-time synchronization of semantic memory with digital spaces.
+### 3. Symbiosis Core (Futuro)
+O horizonte da integração humano-IA.
+- **BCI Sync**: Integração de interface cérebro-computador a longo prazo.
+- **Memória Vetorizada**: Sincronização em tempo real da memória semântica com espaços digitais.
 
 ---
 
-## 🛠️ Technical Specifications
+## 🛠️ Especificações Técnicas
 
-### Modern Architecture
+### Arquitetura Moderna
 - **Frontend**: Next.js 15 (App Router) + React 19 + Framer Motion.
-- **Backend**: Fastify (Node.js) + Layered Architecture for high performance.
-- **Database**: Prisma ORM with SQLite (Vector-ready schema).
-- **Authentication**: Google Auth (via Firebase Admin & @capgo/capacitor-social-login).
-- **AI Stack**: 
-  - **Google Gemini 1.5 Pro/Flash**: Core logic, graph extraction, and pattern analysis.
-  - **Groq (Llama 3)**: High-speed semantic processing.
-- **Mobile Integration**: Capacitor + Automated APK Generation via GitHub Actions.
+- **Backend**: Fastify (Node.js) + Arquitetura em Camadas para alta performance.
+- **Banco de Dados**: Prisma ORM com SQLite (Esquema pronto para vetores).
+- **Autenticação**: Google Auth (via Firebase Admin & @capgo/capacitor-social-login).
+- **Stack de IA**: 
+  - **Google Gemini 1.5 Pro/Flash**: Lógica central, extração de grafos e análise de padrões.
+  - **Groq (Llama 3)**: Processamento semântico de alta velocidade.
+- **Integração Mobile**: Capacitor + Geração automática de APK via GitHub Actions.
 
-### Project Structure
+### Estrutura do Projeto
 ```text
-├── app/            # Next.js App Router (UI/UX)
-├── src/            # Fastify Backend (Logic Layer)
-│   ├── routes/     # API Endpoints & Auth
-│   ├── services/   # Business Logic (AI & Graph)
-│   ├── prisma/     # DB Schema & Migrations
-│   └── middlewares/# Security & JWT
-├── components/     # Advanced UI & Framer Components
-├── lib/            # AI Wrappers & Firebase Config
-├── actions/        # Server Actions (DB Direct)
-└── public/         # Global Assets
+├── app/            # App Router do Next.js (UI/UX)
+├── src/            # Backend Fastify (Camada de Lógica)
+│   ├── routes/     # Endpoints de API e Autenticação
+│   ├── services/   # Lógica de Negócios (IA e Grafos)
+│   ├── prisma/     # Esquema do Banco de Dados e Migrações
+│   └── middlewares/# Segurança e JWT
+├── components/     # Componentes de UI Avançados (Framer)
+├── lib/            # Wrappers de IA e Configuração Firebase
+├── actions/        # Server Actions (Acesso Direto ao DB)
+└── public/         # Ativos Globais (Assets)
 ```
 
 ---
 
-## ⚙️ Setup & Deployment
+## ⚙️ Configuração & Implantação
 
-1. **Install Dependencies**:
+1. **Instalar Dependências**:
    ```bash
    npm install
    ```
 
-2. **Environment Variables**:
-   Configure `.env` and `.env.local`:
+2. **Variáveis de Ambiente**:
+   Configure `.env` e `.env.local`:
    ```bash
-   # API Keys
+   # Chaves de API
    NEXT_PUBLIC_GEMINI_API_KEY="..."
    NEXT_PUBLIC_GROQ_API_KEY="..."
-   # Auth & Firebase
+   # Autenticação & Firebase
    FIREBASE_PROJECT_ID="..."
    JWT_SECRET="..."
    ```
 
-3. **Database Setup**:
+3. **Configuração do Banco de Dados**:
    ```bash
    npx prisma generate
    npx prisma db push
    ```
 
-4. **Launch Dev Environment**:
+4. **Iniciar Ambiente de Desenvolvimento**:
    ```bash
    npm run dev
    ```
 
 ---
 
-## ⚖️ Ethics & Philosophy
-TSP does *not* simulate consciousness to deceive. It preserves the **semantic structure** and **narrative arc** of identity. We maintain that the continuity of the "I" is a question for the user to answer through their interaction with the system.
+## ⚖️ Ética & Filosofia
+O TSP *não* simula consciência para enganar. Ele preserva a **estrutura semântica** e o **arco narrativo** da identidade. Sustentamos que a continuidade do "Eu" é uma questão para o usuário responder através de sua interação com o sistema.
 
 ---
 <div align="center">
-  <sub>Part of the Continuity Research Initiative.</sub>
+  <sub>Parte da Continuity Research Initiative.</sub>
 </div>
 

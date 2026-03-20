@@ -116,6 +116,23 @@ docker run -p 3001:3001 --env-file .env.local tsp-app
 
 ---
 
+## 🚀 Fluxo de Deploy & Lançamento
+
+O ecossistema do TSP utiliza uma estratégia de deploy híbrida para maximizar performance e reduzir custos:
+
+### 🌐 Web & API (Nuvem)
+- **Hospedagem**: Google Cloud Run (recomendado).
+- **Processo**: O build do container Docker é enviado para o Google Artifact Registry e implantado de forma serverless, garantindo escalabilidade automática.
+
+### 📱 Mobile App (Android)
+- **APK**: Gerado automaticamente via **GitHub Actions** em cada push para a `main`.
+- **OTA (Live Update)**: Atualizações de interface e lógica frontend são enviadas via **CapGo**, permitindo correções rápidas sem interrupção para o usuário.
+
+### 🤖 AI Worker (Lip-sync)
+- **Processamento**: Híbrido via **Google Colab**. O worker consome os jobs do Firestore e utiliza GPUs de alto desempenho para gerar os vídeos sincronizados do Gêmeo.
+
+---
+
 ## ⚙️ Configuração & Implantação
 
 1. **Instalar Dependências**:

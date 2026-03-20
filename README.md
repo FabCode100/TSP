@@ -83,6 +83,22 @@ Para alcançar a sincronia labial (lip-sync) nos vídeos do Gêmeo, o TSP utiliz
 
 ---
 
+## 📱 Mobile & CI/CD (Automação)
+
+O TSP foi projetado para ser uma experiência mobile nativa, utilizando uma pipeline de automação robusta:
+
+### Capacitor & Build Nativo
+- **Capacitor 8**: Camada de abstração que permite rodar o app Next.js como um aplicativo nativo Android/iOS.
+- **Identificador**: `io.symbiosis.protocol`
+- **Build de APK**: Automatizado para gerar versões de teste (Debug) prontas para instalação.
+
+### GitHub Actions (CI/CD)
+O projeto utiliza workflows automatizados para garantir agilidade no desenvolvimento:
+1.  **Build Android APK**: Sempre que há um push na `main`, o GitHub Actions prepara o ambiente (Node + Java), faz o export estático do Next.js e compila o APK, disponibilizando-o como um artefato de build.
+2.  **Live Update (CapGo OTA)**: Implementação de atualizações "Over-The-Air". Alterações na interface e lógica do frontend são enviadas diretamente para os dispositivos dos usuários via **CapGo**, sem a necessidade de reinstalar o APK.
+
+---
+
 ## ⚙️ Configuração & Implantação
 
 1. **Instalar Dependências**:

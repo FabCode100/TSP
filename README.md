@@ -14,7 +14,7 @@ Nossa missão é preservar, organizar e projetar a estrutura semântica de uma i
 
 ---
 
-## 🎨 Showcase de Design & Interface
+## 🎨 UI/UX Design
 
 Explore a evolução visual do motor de identidade TSP.
 

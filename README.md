@@ -99,6 +99,23 @@ O projeto utiliza workflows automatizados para garantir agilidade no desenvolvim
 
 ---
 
+## 🐳 Containerização (Docker)
+
+Para implantar o TSP em ambientes de produção de forma isolada e escalável, utilize o Docker. O projeto conta com um `Dockerfile` multi-stage otimizado (Alpine Linux):
+
+### Build da Imagem
+```bash
+docker build -t tsp-app .
+```
+
+### Executar o Container
+```bash
+docker run -p 3001:3001 --env-file .env.local tsp-app
+```
+*Porta padrão: 3001 (Fastify API + Frontend Estático).*
+
+---
+
 ## ⚙️ Configuração & Implantação
 
 1. **Instalar Dependências**:

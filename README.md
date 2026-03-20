@@ -58,29 +58,28 @@ O horizonte da integração humano-IA.
 
 ## 🛠️ Especificações Técnicas
 
-### Arquitetura Moderna
-- **Frontend**: Next.js 15 (App Router) + React 19 + Framer Motion.
-- **Backend**: Fastify (Node.js) + Arquitetura em Camadas para alta performance.
-- **Banco de Dados**: Prisma ORM com SQLite (Esquema pronto para vetores).
-- **Autenticação**: Google Auth (via Firebase Admin & @capgo/capacitor-social-login).
-- **Stack de IA**: 
-  - **Google Gemini 1.5 Pro/Flash**: Lógica central, extração de grafos e análise de padrões.
-  - **Groq (Llama 3)**: Processamento semântico de alta velocidade.
+### Inteligência Artificial Multimodal
+O TSP utiliza uma orquestração de diferentes modelos de IA para garantir profundidade e performance:
+- **Google Gemini 1.5 Pro/Flash**: O "Cérebro" do projeto. Responsável pela extração de grafos semânticos, análise de padrões de identidade e lógica de decisão complexa.
+- **Groq (Llama 3.3 70B)**: O "Reflexo". Utilizado para geração de respostas em tempo real via streaming, garantindo que o diálogo com o Gêmeo seja quase instantâneo.
+- **Google TTS (Text-to-Speech)**: Gera a voz sintética do Gêmeo, permitindo uma interação auditiva.
+- **Whisper (via Groq)**: Transcrição de áudio de alta precisão para comandos de voz do usuário.
+
+### Arquitetura de Software
+- **Frontend**: Next.js 15 (App Router) + React 19 + Framer Motion (Animações fluidas).
+- **Backend**: Fastify (Node.js) + Prisma ORM + SQLite.
+- **Autenticação**: Google Auth integrado via Firebase Admin e @capgo/capacitor-social-login.
 - **Integração Mobile**: Capacitor + Geração automática de APK via GitHub Actions.
 
-### Estrutura do Projeto
-```text
-├── app/            # App Router do Next.js (UI/UX)
-├── src/            # Backend Fastify (Camada de Lógica)
-│   ├── routes/     # Endpoints de API e Autenticação
-│   ├── services/   # Lógica de Negócios (IA e Grafos)
-│   ├── prisma/     # Esquema do Banco de Dados e Migrações
-│   └── middlewares/# Segurança e JWT
-├── components/     # Componentes de UI Avançados (Framer)
-├── lib/            # Wrappers de IA e Configuração Firebase
-├── actions/        # Server Actions (Acesso Direto ao DB)
-└── public/         # Ativos Globais (Assets)
-```
+---
+
+## 📽️ Solução de Lip-sync (Aura Visual)
+
+Para alcançar a sincronia labial (lip-sync) nos vídeos do Gêmeo, o TSP utiliza uma arquitetura híbrida e distribuída:
+
+1.  **Geração de Job**: O Backend (Node.js) gera o áudio via Google TTS e registra um novo "Job" no **Firebase Firestore**.
+2.  **Processamento em GPU (Google Colab)**: Um notebook no Google Colab monitora o Firestore em tempo real. Ao detectar um novo job, ele utiliza modelos de IA de última geração (como **SadTalker** ou **SyncLabs**) para renderizar o vídeo com base na foto de perfil e no áudio gerado.
+3.  **Sincronização**: O vídeo processado é salvo de volta no Storage, e o frontend atualiza o avatar do Gêmeo instantaneamente.
 
 ---
 

@@ -82,7 +82,8 @@ Embora o MVP esteja funcionalmente pronto para validar a premissa filosófica e 
 O TSP utiliza uma orquestração de diferentes modelos de IA para garantir profundidade e performance:
 - **Google Gemini 1.5 Pro/Flash**: O "Cérebro" do projeto. Responsável pela extração de grafos semânticos, análise de padrões de identidade e lógica de decisão complexa.
 - **Groq (Llama 3.3 70B)**: O "Reflexo". Utilizado para geração de respostas em tempo real via streaming, garantindo que o diálogo com o Gêmeo seja quase instantâneo.
-- **Google TTS (Text-to-Speech)**: Gera a voz sintética do Gêmeo, permitindo uma interação auditiva.
+- **ElevenLabs**: Responsável pela geração de voz (TTS) hiper-realista, conferindo expressividade, emoção e uma identidade vocal única para o Gêmeo.
+- **Google TTS (Text-to-Speech)**: Alternativa e motor de fallback para geração de voz sintética.
 - **Whisper (via Groq)**: Transcrição de áudio de alta precisão para comandos de voz do usuário.
 
 ### Arquitetura de Software

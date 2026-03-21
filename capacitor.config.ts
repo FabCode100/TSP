@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'io.symbiosis.protocol',
-  appName: 'TSP',
+  appName: 'The Symbiosis Protocol',
   webDir: 'out',
   plugins: {
     SocialLogin: {

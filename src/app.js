@@ -34,19 +34,6 @@ function buildApp(opts = {}) {
     wildcard: false,
   });
 
-  // Handle SPA routing for the static export
-  app.setNotFoundHandler((request, reply) => {
-    if (request.raw.url.startsWith('/auth') || 
-        request.raw.url.startsWith('/entries') || 
-        request.raw.url.startsWith('/graph') || 
-        request.raw.url.startsWith('/mirror') || 
-        request.raw.url.startsWith('/patterns') || 
-        request.raw.url.startsWith('/twin')) {
-      return reply.code(404).send({ error: 'Not Found' });
-    }
-    return reply.sendFile('index.html');
-  });
-
   // Register Routes
   app.register(authRoutes, { prefix: '/auth' });
   app.register(entriesRoutes, { prefix: '/entries' });
@@ -55,7 +42,20 @@ function buildApp(opts = {}) {
   app.register(patternsRoutes, { prefix: '/patterns' });
   app.register(twinRoutes, { prefix: '/twin' });
   app.register(twinSharingRoutes, { prefix: '/twin/share' });
-  app.register(publicTwinRoutes, { prefix: '/twin' });
+  app.register(publicTwinRoutes, { prefix: '/twin/public' });
+
+  // Handle SPA routing for the static export
+  app.setNotFoundHandler((request, reply) => {
+    if (request.raw.url.startsWith('/auth') || 
+        request.raw.url.startsWith('/entries') || 
+        request.raw.url.startsWith('/graph') || 
+        request.raw.url.startsWith('/mirror') || 
+        request.raw.url.startsWith('/patterns') || 
+        request.raw.url.startsWith('/twin')) {
+      return reply.code(404).send({ error: 'Not Found (API)' });
+    }
+    return reply.sendFile('index.html');
+  });
 
   // Health check
   app.get('/health', async () => {

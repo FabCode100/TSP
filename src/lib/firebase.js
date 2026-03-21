@@ -6,7 +6,7 @@ const serviceAccount = require(path.join(__dirname, '../../the-symbiotic-protoco
 if (!admin.apps.length) {
   admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
-    storageBucket: `${serviceAccount.project_id}.firebasestorage.app`
+    storageBucket: `${serviceAccount.project_id}.appspot.com`
   });
 }
 

@@ -4,7 +4,14 @@ import { useState, useEffect, useRef, Suspense } from 'react';
 import { motion } from 'motion/react';
 import { Sparkles, Send, Clock, MessageSquare, LogOut, Mic, Volume2, Square } from 'lucide-react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { getSharedTwinProfile, sendSharedTwinMessage, endSharedSession, getPublicTwinProfile, sendPublicTwinMessage } from '@/actions/db';
+import { 
+  getSharedTwinProfile, 
+  sendSharedTwinMessage, 
+  endSharedSession, 
+  getPublicTwinProfile, 
+  sendPublicTwinMessage, 
+  generateAvatar as generateAvatarAction 
+} from '@/actions/db';
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 
 export default function ExplorarTwin() {
@@ -28,13 +35,47 @@ function ExplorarContent() {
   const [messages, setMessages] = useState<{ role: 'twin' | 'visitor'; content: string; time: string }[]>([]);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [sessionStart] = useState(Date.now());
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { isRecording, isTranscribing, isSpeaking, startRecording, stopRecording, speak, stopSpeaking } = useAudioRecorder();
+  const generationIdRef = useRef(0);
+  
+  const { 
+    isRecording, 
+    isTranscribing, 
+    isSpeaking, 
+    startRecording, 
+    stopRecording, 
+    speak, 
+    stopSpeaking,
+    playRemoteAudio 
+  } = useAudioRecorder();
 
   const now = () => new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
+  const generateAvatar = async (text: string, photoUrl: string, voiceId?: string) => {
+    stopSpeaking();
+    const thisGeneration = ++generationIdRef.current;
+    setIsGeneratingAvatar(true);
+
+    try {
+      const data = await generateAvatarAction(text, photoUrl, voiceId);
+      const { audioUrl } = data;
+
+      if (audioUrl && thisGeneration === generationIdRef.current) {
+        stopSpeaking();
+        playRemoteAudio(audioUrl);
+      }
+    } catch (err) {
+      console.error('Failed to generate avatar:', err);
+    } finally {
+      if (thisGeneration === generationIdRef.current) {
+        setIsGeneratingAvatar(false);
+      }
+    }
+  };
 
   useEffect(() => {
     if (!token && !publicId) return;
@@ -93,6 +134,11 @@ function ExplorarContent() {
             return newMsgs;
           });
         }
+      }
+
+      // Trigger high-quality audio generation
+      if (currentResponse && profile) {
+        generateAvatar(currentResponse, profile.photo_url, profile.voice_id);
       }
     } catch (e) {
       setMessages(prev => [...prev, { role: 'twin', content: 'Conexão com o núcleo falhou momentaneamente.', time: now() }]);
@@ -182,8 +228,14 @@ function ExplorarContent() {
           <section className="mb-12 w-full">
             <div className="flex flex-col items-center text-center gap-6">
               <div className="relative">
-                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#2a292e] border border-[#444652]/20 flex items-center justify-center text-2xl md:text-3xl font-['Cormorant_Garamond'] tracking-widest text-[#7B9CFF]">
-                  {profile?.ownerName?.substring(0, 2).toUpperCase() || 'TW'}
+                <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-[#2a292e] border border-[#444652]/20 flex items-center justify-center overflow-hidden">
+                  {profile?.photo_url ? (
+                    <img src={profile.photo_url} alt={profile.ownerName} className="w-full h-full object-cover" />
+                  ) : (
+                    <span className="text-2xl md:text-3xl font-['Cormorant_Garamond'] tracking-widest text-[#7B9CFF]">
+                      {profile?.ownerName?.substring(0, 2).toUpperCase() || 'TW'}
+                    </span>
+                  )}
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 md:w-6 md:h-6 bg-[#7B9CFF] rounded-full border-4 border-[#050508] flex items-center justify-center">
                   <Sparkles size={10} className="text-[#050508]" />
@@ -238,22 +290,23 @@ function ExplorarContent() {
                   ? 'bg-[#1f1f23] rounded-tr-xl rounded-br-xl rounded-bl-xl px-4 md:px-6 py-4 md:py-5'
                   : 'bg-[#1b1b1f] border border-[#444652]/10 rounded-tl-xl rounded-bl-xl rounded-br-xl px-4 md:px-6 py-4 md:py-5'
                 }>
-                  <p className={msg.role === 'twin'
+                  <div className={msg.role === 'twin'
                     ? "font-['Cormorant_Garamond'] italic text-lg md:text-xl leading-relaxed text-[#e5e1e7]/90 break-words"
                     : "font-serif text-sm md:text-base break-words"
                   }>
-                  <div className="flex flex-col gap-2">
-                    {msg.content || '...'}
-                    {msg.role === 'twin' && msg.content && (
-                      <button 
-                        onClick={() => speak(msg.content)}
-                        className="self-end text-[#7B9CFF]/40 hover:text-[#7B9CFF] transition-colors"
-                      >
-                        <Volume2 size={12} />
-                      </button>
-                    )}
+                    <div className="flex flex-col gap-2">
+                      {msg.content || '...'}
+                      {msg.role === 'twin' && msg.content && (
+                        <button 
+                          onClick={() => generateAvatar(msg.content, profile?.photo_url, profile?.voice_id)}
+                          className="self-end text-[#7B9CFF]/40 hover:text-[#7B9CFF] transition-colors"
+                          disabled={isGeneratingAvatar}
+                        >
+                          <Volume2 size={12} className={isGeneratingAvatar ? 'animate-pulse' : ''} />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  </p>
                 </div>
               </motion.div>
             ))}

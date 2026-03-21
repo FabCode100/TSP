@@ -159,7 +159,7 @@ export async function getOrCreateUser() {
     // Se 'onboarding' for uma string (JSON), avaliamos se está preenchida.
     // No nosso caso, o onboarding é considerado completo se houver dados lá.
     const onboardingComplete = user.onboarding && user.onboarding !== '[]';
-    return { ...user, onboarding: onboardingComplete };
+    return { ...user, onboarding: onboardingComplete, photoUrl: user.photoUrl, voiceId: user.voiceId };
   } catch (e) {
     console.warn('[API] Could not fetch user status, defaulting to incomplete onboarding.');
     return { id: 'guest', onboarding: false };
@@ -179,6 +179,13 @@ export async function saveOnboarding(answers: string[]) {
   await fetchAPI('/auth/onboarding', {
     method: 'POST',
     body: JSON.stringify({ answers })
+  });
+}
+
+export async function updateProfile(data: { photoUrl?: string, voiceId?: string }) {
+  return fetchAPI('/auth/profile', {
+    method: 'POST',
+    body: JSON.stringify(data)
   });
 }
 
@@ -232,6 +239,17 @@ export async function savePatterns(patterns: any[]) {
 
 export async function getTwinProfile() {
   return await fetchAPI('/twin/profile');
+}
+
+export async function generateAvatar(text: string, photoUrl: string, voiceId?: string) {
+  return await fetchAPI('/twin/avatar/generate', {
+    method: 'POST',
+    body: JSON.stringify({ text, photoUrl, voiceId })
+  });
+}
+
+export async function pollAvatarStatus(jobId: string) {
+  return await fetchAPI(`/twin/avatar/status/${jobId}`);
 }
 
 export async function* sendTwinMessage(message: string) {

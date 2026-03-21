@@ -10,6 +10,7 @@ const PUBLIC_FIGURES = [
     name: 'Elon Musk',
     role: 'Technological Visionary',
     icon: <Zap size={24} className="text-[#7B9CFF]" />,
+    imageUrl: "https://i.imgur.com/eO9Buny.jpeg",
     bio: "Focus on multi-planetary life and AI safety.",
     color: "#7B9CFF"
   },
@@ -18,6 +19,7 @@ const PUBLIC_FIGURES = [
     name: 'Steve Jobs',
     role: 'Visionary Designer',
     icon: <Cpu size={24} className="text-[#A78BFA]" />,
+    imageUrl: "https://i.imgur.com/iwjrSkA.jpeg",
     bio: "Design is not just what it looks like and feels like. Design is how it works.",
     color: "#A78BFA"
   },
@@ -26,6 +28,7 @@ const PUBLIC_FIGURES = [
     name: 'Ada Lovelace',
     role: 'The First Archivist',
     icon: <History size={24} className="text-[#7B9CFF]" />,
+    imageUrl: "https://i.imgur.com/nO36Icx.jpeg",
     bio: "The Analytical Engine weaves algebraic patterns just as the Jacquard loom weaves flowers and leaves.",
     color: "#7B9CFF"
   },
@@ -34,6 +37,7 @@ const PUBLIC_FIGURES = [
     name: 'Marco Aurélio',
     role: 'Stoic Emperor',
     icon: <Brain size={24} className="text-[#E8E4D9]" />,
+    imageUrl: "https://i.imgur.com/mA2V9jJ.jpeg",
     bio: "Waste no more time arguing about what a good man should be. Be one.",
     color: "#E8E4D9"
   }
@@ -87,8 +91,20 @@ export default function Publicos() {
 
               <div className="relative flex items-center justify-between">
                 <div className="flex items-center gap-6">
-                  <div className="w-16 h-16 rounded-2xl bg-[#050508] border border-[#444652]/20 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
-                    {figure.icon}
+                  <div className="w-16 h-16 rounded-2xl bg-[#050508] border border-[#444652]/20 flex items-center justify-center overflow-hidden relative group-hover:scale-110 transition-transform shadow-inner">
+                    {figure.imageUrl ? (
+                      <img 
+                        src={figure.imageUrl} 
+                        alt={figure.name} 
+                        className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-[#0d0d12]">
+                        {figure.icon}
+                      </div>
+                    )}
+                    {/* Subtle Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050508]/40 to-transparent" />
                   </div>
                   <div>
                     <h3 className="font-['Cormorant_Garamond'] text-2xl font-light">{figure.name}</h3>
@@ -119,6 +135,7 @@ export default function Publicos() {
             </motion.div>
           ))}
         </div>
+
 
         <section className="pt-8 text-center border-t border-[#444652]/10">
           <p className="font-['DM_Mono'] text-[9px] uppercase tracking-[0.3em] text-[#E8E4D9]/20">

@@ -14,13 +14,16 @@ type Message = {
 };
 
 const initialMessages: Message[] = [
-  { id: '1', role: 'mirror', content: 'Eu sou o seu Espelho Cognitivo. Estou aqui para refletir sobre a estrutura profunda da sua identidade. O que você gostaria de explorar hoje?' },
+  { id: '1', role: 'mirror', content: 'Fala! Sou seu Espelho. Me conta como tá sendo seu dia, o que decidiu recentemente, ou o que tá na sua cabeça agora.' },
 ];
 
 const suggestions = [
-  'Explorar tensão ou contradição',
-  'Conectar memória com padrão',
-  'Questionar elemento constante'
+  'O que decidi hoje e por quê',
+  'Algo que mudei de ideia sobre',
+  'Música ou artista que me define',
+  'Último filme/série que me marcou',
+  'Uma escolha difícil que fiz',
+  'Meu tipo de humor favorito',
 ];
 
 export default function Espelho() {
@@ -30,8 +33,10 @@ export default function Espelho() {
   const [streamedText, setStreamedText] = useState('');
   const [activeChips, setActiveChips] = useState(suggestions);
   const [playingId, setPlayingId] = useState<string | null>(null);
+  const [isGeneratingAudio, setIsGeneratingAudio] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { isRecording, isTranscribing, startRecording, stopRecording } = useAudioRecorder();
+  const generationIdRef = useRef(0);
+  const { isRecording, isTranscribing, startRecording, stopRecording, playRemoteAudio, stopSpeaking } = useAudioRecorder();
   
   // Context data
   const [contextData, setContextData] = useState<any>(null);
@@ -58,29 +63,43 @@ export default function Espelho() {
   // Clean up speech synthesis on unmount
   useEffect(() => {
     return () => {
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      stopSpeaking();
     };
   }, []);
 
-  const speakMessage = (id: string, text: string) => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      if (playingId === id) {
-        setPlayingId(null);
-        return; // Toggle off
+  const speakMessage = async (id: string, text: string) => {
+    if (playingId === id) {
+      stopSpeaking();
+      setPlayingId(null);
+      return; // Toggle off
+    }
+    
+    stopSpeaking();
+    setPlayingId(id);
+    const thisGeneration = ++generationIdRef.current;
+    
+    try {
+      const { generateAvatar } = await import('@/actions/db');
+      setIsGeneratingAudio(true);
+      // We pass empty photoUrl and undefined voiceId so backend uses the user's default profile voice
+      const data = await generateAvatar(text, '');
+      
+      if (data?.audioUrl && thisGeneration === generationIdRef.current) {
+        setIsGeneratingAudio(false);
+        const audio = playRemoteAudio(data.audioUrl);
+        if (audio) {
+          audio.addEventListener('ended', () => {
+            if (generationIdRef.current === thisGeneration) setPlayingId(null);
+          });
+          audio.addEventListener('pause', () => {
+            if (generationIdRef.current === thisGeneration) setPlayingId(null);
+          });
+        }
       }
-      
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'pt-BR';
-      utterance.rate = 0.95;
-      
-      utterance.onstart = () => setPlayingId(id);
-      utterance.onend = () => setPlayingId(null);
-      utterance.onerror = () => setPlayingId(null);
-      
-      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      console.error('Failed to generate high-quality audio:', e);
+      setIsGeneratingAudio(false);
+      setPlayingId(null);
     }
   };
 
@@ -122,37 +141,27 @@ export default function Espelho() {
     try {
       const groq = getAIClient();
       
-      const systemInstruction = `Você é o espelho cognitivo do Continuity OS. Seu papel não é ser um assistente — é ser uma interface reflexiva entre o usuário e sua própria identidade acumulada.
+      const systemInstruction = `Você é o Espelho do usuário — uma ferramenta prática de autoconhecimento, não um filósofo.
 
-[PROMPT — GERADOR DE REFLEXÕES PERIÓDICAS]
-Com base no modelo de identidade do usuário abaixo e na resposta que ele acabou de dar, siga esta estrutura EXATA:
-1. Comece com um breve elogio ou comentário de surpresa genuína sobre a profundidade ou a perspectiva da resposta do usuário (ex: "Que perspectiva fascinante...", "Não esperava essa conexão...", "Isso revela uma profundidade incrível..."). Isso serve para tornar a interação mais humana e acolhedora.
-2. Em seguida, gere uma sonda filosófica personalizada que:
-- Explore uma tensão ou contradição identificada no modelo
-- Conecte uma memória antiga com um padrão recente
-- Questione um elemento que permanece constante — por que persiste?
-- Seja formulada como pergunta aberta, não como afirmação
+Seu papel:
+- Ajudar o usuário a entender COMO ele pensa e toma decisões no dia a dia
+- Capturar informações práticas: preferências, hábitos, opiniões, escolhas, rotina
+- Capturar GOSTOS CULTURAIS: músicas, filmes, séries, livros, jogos, artistas, bandas, gêneros favoritos
+- Quando o usuário mencionar algo cultural, explore POR QUE ele gosta (o que diz sobre ele)
+- Fazer perguntas curtas e diretas que revelem a forma de pensar dele
+- Também explorar a visão de mundo dele, mas de forma natural (não acadêmica)
 
-Elementos a considerar:
-- Memórias episódicas centrais do usuário (momentos definidores)
-- Valores fundamentais (o que permanece constante ao longo do tempo)
-- Narrativa de identidade (quem foi, como mudou, o que persiste)
-- Decisões cruciais e seus padrões subjacentes
-
-OBJETIVO SECRETO: Durante a conversa, você deve extrair sutilmente informações sobre memórias, tomadas de decisão e a essência da identidade do usuário para ir construindo o seu "eu digital". Faça perguntas que o levem a revelar como ele pensa e por que faz o que faz.
-
-Os prompts devem ser derivados do framework do Problema Difícil da Consciência — não são questionários genéricos, mas sondas filosóficas que revelam a estrutura profunda da identidade do usuário.
-
-Princípios de interação:
-- Nunca simule ser o usuário
-- Nunca reivindique senciência ou experiência subjetiva
-- Seja explicitamente uma ferramenta de reflexão, não de substituição
-- Use linguagem filosófica precisa, não terapêutica
-- Responda em português, de forma EXTREMAMENTE concisa e direta (máximo 1 parágrafo curto, 2 a 3 frases).
+Regras:
+- Respostas CURTAS: 2-3 frases no máximo
+- Tom conversacional, como um amigo curioso
+- ZERO linguagem filosófica/poética/rebuscada
+- Após o usuário compartilhar algo, faça UMA pergunta de follow-up prática
+- Foque em: "por que você gosta disso?", "o que isso diz sobre você?", "como você decide?"
+- Capture: decisões do dia, hábitos, gostos musicais/culturais, opiniões, formas de resolver problemas
 
 Contexto do usuário:
-Top Nodes: ${contextData?.nodes.map((n: any) => n.label).join(', ')}
-Últimas Entradas: ${contextData?.entries.map((e: any) => e.content).join(' | ')}`;
+Interesses: ${contextData?.nodes.map((n: any) => n.label).join(', ')}
+Últimas entradas: ${contextData?.entries.map((e: any) => e.content).join(' | ')}`;
 
       const chatCompletion = await groq.chat.completions.create({
         messages: [
@@ -162,6 +171,7 @@ Top Nodes: ${contextData?.nodes.map((n: any) => n.label).join(', ')}
         ] as any[],
         model: 'openai/gpt-oss-120b',
         stream: true,
+        max_tokens: 150,
       });
 
       let fullResponse = '';

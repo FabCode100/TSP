@@ -1,8 +1,6 @@
 const twinService = require('../services/twinService');
 const authenticate = require('../middlewares/authenticate');
-const { db, bucket } = require('../lib/firebase');
-const googleTTS = require('google-tts-api');
-const axios = require('axios');
+const ttsService = require('../services/ttsService');
 
 async function twinRoutes(fastify, options) {
   fastify.addHook('preHandler', authenticate);
@@ -25,47 +23,32 @@ async function twinRoutes(fastify, options) {
   });
 
   fastify.post('/avatar/generate', async (request, reply) => {
-    const { text, photoUrl } = request.body;
+    const { text, photoUrl, voiceId } = request.body;
     const userId = request.user.id;
 
     try {
-      // 1. Gerar áudio via Google TTS (Grátis)
-      const audioUrl = googleTTS.getAudioUrl(text, { lang: 'pt', slow: false, host: 'https://translate.google.com' });
-      const audioResponse = await axios.get(audioUrl, { responseType: 'arraybuffer' });
+      // 0. Determinar a voz: usar a fornecida ou buscar a do usuário
+      let finalVoiceId = voiceId;
       
-      // 2. Upload áudio para Firebase Storage
-      const jobId = `${userId}_${Date.now()}`;
-      const audioFile = bucket.file(`audio/${jobId}.mp3`);
-      await audioFile.save(Buffer.from(audioResponse.data), { contentType: 'audio/mpeg' });
-      await audioFile.makePublic();
-      const publicAudioUrl = audioFile.publicUrl();
+      if (!finalVoiceId) {
+        const authService = require('../services/authService');
+        const user = await authService.getMe(userId);
+        finalVoiceId = user?.voiceId;
+      }
 
-      // 3. Criar Job no Firestore
-      const jobRef = db.collection('avatar_jobs').doc(jobId);
-      await jobRef.set({
-        userId,
-        photo_url: photoUrl,
-        audio_url: publicAudioUrl,
-        status: 'pending',
-        createdAt: new Date().toISOString()
-      });
+      // 1. Gerar áudio via TTSService
+      console.log(`[AvatarRoute] Generating audio for user ${userId}, requested voiceId: ${voiceId}, finalVoiceId: ${finalVoiceId}`);
+      const audioBuffer = await ttsService.generateAudio(text, { voiceId: finalVoiceId });
+      
+      // 2. Converter para base64 data URL
+      const base64Audio = audioBuffer.toString('base64');
+      const audioUrl = `data:audio/mpeg;base64,${base64Audio}`;
+      
+      console.log(`[AvatarRoute] Audio generated successfully. Size: ${audioBuffer.length} bytes`);
 
-      return { success: true, jobId, audioUrl: publicAudioUrl };
+      return { success: true, data: { jobId: `${userId}_${Date.now()}`, audioUrl } };
     } catch (error) {
       console.error('Avatar generation error:', error);
-      return reply.status(500).send({ success: false, error: error.message });
-    }
-  });
-
-  fastify.get('/avatar/status/:jobId', async (request, reply) => {
-    const { jobId } = request.params;
-    try {
-      const jobDoc = await db.collection('avatar_jobs').doc(jobId).get();
-      if (!jobDoc.exists) {
-        return reply.status(404).send({ success: false, error: 'Job not found' });
-      }
-      return { success: true, data: jobDoc.data() };
-    } catch (error) {
       return reply.status(500).send({ success: false, error: error.message });
     }
   });

@@ -8,6 +8,7 @@ export function useAudioRecorder() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const synthRef = useRef<SpeechSynthesis | null>(null);
+  const activeAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const startRecording = useCallback(async () => {
     try {
@@ -68,8 +69,13 @@ export function useAudioRecorder() {
   const speak = useCallback((text: string) => {
     if (!window.speechSynthesis) return;
     
-    // Stop any ongoing speech
+    // Stop any ongoing speech AND remote audio
     window.speechSynthesis.cancel();
+    if (activeAudioRef.current) {
+      activeAudioRef.current.pause();
+      activeAudioRef.current.currentTime = 0;
+      activeAudioRef.current = null;
+    }
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'pt-BR';
@@ -86,8 +92,36 @@ export function useAudioRecorder() {
   const stopSpeaking = useCallback(() => {
     if (window.speechSynthesis) {
       window.speechSynthesis.cancel();
-      setIsSpeaking(false);
     }
+    if (activeAudioRef.current) {
+      activeAudioRef.current.pause();
+      activeAudioRef.current.currentTime = 0;
+      activeAudioRef.current = null;
+    }
+    setIsSpeaking(false);
+  }, []);
+
+  const playRemoteAudio = useCallback((url: string) => {
+    // 1. Parar áudio anterior se houver
+    if (activeAudioRef.current) {
+      activeAudioRef.current.pause();
+      activeAudioRef.current = null;
+    }
+
+    const audio = new Audio(url);
+    activeAudioRef.current = audio;
+
+    audio.onplay = () => setIsSpeaking(true);
+    audio.onended = () => {
+      setIsSpeaking(false);
+      activeAudioRef.current = null;
+    };
+    audio.onerror = () => {
+      setIsSpeaking(false);
+      activeAudioRef.current = null;
+    };
+    audio.play().catch(e => console.error('Error playing remote audio:', e));
+    return audio;
   }, []);
 
   return {
@@ -97,6 +131,7 @@ export function useAudioRecorder() {
     startRecording,
     stopRecording,
     speak,
-    stopSpeaking
+    stopSpeaking,
+    playRemoteAudio
   };
 }

@@ -184,6 +184,17 @@ export default function Nucleo() {
     <div className="h-full w-full bg-void relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(circle at center, rgba(123, 156, 255, 0.08) 0%, transparent 70%)' }} />
       
+      {/* Header with Patterns link */}
+      <div className="absolute top-12 left-6 right-6 z-10 flex justify-between items-center pointer-events-none">
+        <h1 className="font-display text-[28px] text-signal leading-none pointer-events-auto">Núcleo</h1>
+        <button 
+          onClick={() => window.location.href = '/padroes'}
+          className="px-4 py-2 bg-membrane/40 backdrop-blur-md border border-threshold rounded-full text-[11px] font-interface text-whisper uppercase tracking-widest hover:text-pulse hover:border-pulse transition-all pointer-events-auto"
+        >
+          Ver Padrões
+        </button>
+      </div>
+
       <svg ref={svgRef} className="w-full h-full" />
 
       <AnimatePresence>

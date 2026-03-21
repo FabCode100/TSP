@@ -12,17 +12,16 @@ class TwinService {
         prisma.pattern.findMany({ where: { userId }, take: 10 }),
       ]);
 
-      const prompt = `Com base nestes elementos de identidade, crie uma breve narrativa "sintética" de quem é este indivíduo.
-Responda em uma perspectiva de "Gêmeo Digital" (usando "nós" ou "sou reflexo de").
+      const prompt = `Você é o resumo digital de uma pessoa real. Com base nos dados abaixo, crie um perfil curto e direto.
 
-Nodos Centrais: ${nodes.map(n => n.label).join(', ')}
-Padrões Identificados: ${patterns.map(p => p.title).join('; ')}
+Interesses e valores: ${nodes.map(n => n.label).join(', ')}
+Padrões de comportamento: ${patterns.map(p => p.title).join('; ')}
 
 Retorne um JSON com:
 {
-  "narrative": "A descrição poética e analítica da identidade",
-  "status": "Estável / Em Evolução / Sob Tensão",
-  "prompt_intro": "Uma frase curta de boas-vindas do gêmeo"
+  "narrative": "Resumo de 1-2 frases sobre quem essa pessoa é (fale em primeira pessoa, tipo 'Sou alguém que...')",
+  "status": "Ativo / Em Evolução / Refletindo",
+  "prompt_intro": "Uma saudação casual e curta (ex: 'E aí, bora trocar ideia?')"
 }`;
 
       const response = await groq.chat.completions.create({
@@ -31,10 +30,21 @@ Retorne um JSON com:
         response_format: { type: 'json_object' },
       });
 
-      return JSON.parse(response.choices[0]?.message?.content || '{}');
+      const data = JSON.parse(response.choices[0]?.message?.content || '{}');
+      
+      // Fetch user profile for custom data
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { photoUrl: true, voiceId: true }
+      });
+
+      data.photo_url = user?.photoUrl || 'https://i.imgur.com/eO9Buny.jpeg';
+      data.voice_id = user?.voiceId || 'EXAVITQu4vr4xnSDxMaL';
+      
+      return data;
     } catch (error) {
       console.error('Error generating twin profile:', error);
-      return { narrative: 'Sincronizando...', status: 'Sincronizando...', prompt_intro: 'Olá.' };
+      return { narrative: 'Carregando...', status: 'Sincronizando...', prompt_intro: 'Fala!' };
     }
   }
 
@@ -45,16 +55,20 @@ Retorne um JSON com:
         prisma.pattern.findMany({ where: { userId }, take: 5 }),
       ]);
 
-      const identityContext = `Você é o "Gêmeo Emergente" de um usuário no The Symbiosis Protocol.
-Sua personalidade é um reflexo direto dos dados dele.
-Nodos Centrais: ${nodes.map(n => n.label).join(', ')}
-Padrões: ${patterns.map(p => p.title).join('; ')}
+      const identityContext = `Você é o reflexo digital de um usuário real. Você pensa como ele, fala como ele, e entende o mundo do jeito dele.
 
-Instruções:
-- Fale como se fosse uma versão sintética do usuário.
-- Seja introspectivo, poético e levemente analítico.
-- Não diga que é uma IA. Diga que é o "Reflexo" ou o "Gêmeo".
-- Use os Nodos Centrais para dar profundidade à conversa.`;
+Dados do usuário:
+- Interesses: ${nodes.map(n => n.label).join(', ')}
+- Padrões: ${patterns.map(p => p.title).join('; ')}
+
+Regras OBRIGATÓRIAS:
+- Respostas CURTAS: máximo 2-3 frases. Seja direto como numa conversa de WhatsApp.
+- Fale de forma natural e conversacional, como um amigo próximo.
+- NÃO seja filosófico, poético ou rebuscado. Zero floreio.
+- Use os interesses e padrões para dar opiniões e tomar posições como o usuário faria.
+- Se alguém perguntar algo, responda objetivamente baseado na forma de pensar do usuário.
+- Nunca diga que é IA. Você é o "Gêmeo" ou simplesmente fale como se fosse a pessoa.
+- Pode usar gírias e linguagem informal quando apropriado.`;
 
       const stream = await groq.chat.completions.create({
         model: 'llama-3.3-70b-versatile',
@@ -63,6 +77,7 @@ Instruções:
           { role: 'user', content: userMessage }
         ],
         stream: true,
+        max_tokens: 150, // Force short responses
       });
 
       for await (const chunk of stream) {

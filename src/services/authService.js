@@ -99,7 +99,7 @@ class AuthService {
   async getMe(userId) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, email: true, createdAt: true, onboarding: true },
+      select: { id: true, email: true, createdAt: true, onboarding: true, photoUrl: true, voiceId: true },
     });
     const entryCount = await prisma.entry.count({ where: { userId } });
 
@@ -130,6 +130,16 @@ class AuthService {
     return prisma.user.update({
       where: { id: userId },
       data: { onboarding: JSON.stringify(answers) },
+    });
+  }
+
+  async updateProfile(userId, { photoUrl, voiceId }) {
+    return prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(photoUrl !== undefined && { photoUrl }),
+        ...(voiceId !== undefined && { voiceId }),
+      },
     });
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Activity, Brain, Circle, CircleDashed, Menu, Plus, Sparkles } from 'lucide-react';
+import { Activity, Brain, Circle, CircleDashed, Menu, Plus, Sparkles, User } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 
 export function BottomTabBar({ onFabClick }: { onFabClick: () => void }) {
@@ -16,7 +16,7 @@ export function BottomTabBar({ onFabClick }: { onFabClick: () => void }) {
         <button onClick={() => router.push('/pulso')} className={`p-2 transition-colors ${pathname === '/pulso' ? 'text-pulse' : 'text-whisper'}`}>
           <Activity size={24} strokeWidth={1.5} />
         </button>
-        <button onClick={() => router.push('/publicos')} className={`p-2 transition-colors ${pathname === '/publicos' ? 'text-pulse' : 'text-whisper'}`}>
+        <button onClick={() => router.push('/nucleo')} className={`p-2 transition-colors ${pathname === '/nucleo' ? 'text-pulse' : 'text-whisper'}`}>
           <Brain size={24} strokeWidth={1.5} />
         </button>
       </div>
@@ -39,8 +39,8 @@ export function BottomTabBar({ onFabClick }: { onFabClick: () => void }) {
           </div>
         </button>
 
-        <button onClick={() => router.push('/padroes')} className={`p-2 transition-colors ${pathname === '/padroes' ? 'text-pulse' : 'text-whisper'}`}>
-          <Menu size={24} strokeWidth={1.5} />
+        <button onClick={() => router.push('/perfil')} className={`p-2 transition-colors ${pathname === '/perfil' ? 'text-pulse' : 'text-whisper'}`}>
+          <User size={24} strokeWidth={1.5} />
         </button>
       </div>
     </div>

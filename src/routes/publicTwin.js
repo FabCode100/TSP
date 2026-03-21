@@ -1,7 +1,7 @@
 const publicFigureService = require('../services/publicFigureService');
 
 async function publicTwinRoutes(fastify, options) {
-  fastify.get('/public/profile/:figureId', async (request, reply) => {
+  fastify.get('/profile/:figureId', async (request, reply) => {
     const { figureId } = request.params;
     const profile = await publicFigureService.getProfile(figureId);
     if (!profile) {
@@ -10,7 +10,7 @@ async function publicTwinRoutes(fastify, options) {
     return { data: profile, error: null };
   });
 
-  fastify.post('/public/chat/:figureId', async (request, reply) => {
+  fastify.post('/chat/:figureId', async (request, reply) => {
     const { figureId } = request.params;
     const { message } = request.body;
     

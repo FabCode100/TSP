@@ -36,6 +36,13 @@ async function authRoutes(fastify, options) {
     await authService.updateOnboarding(request.user.id, answers);
     return { data: { success: true }, error: null, meta: null };
   });
+
+  fastify.post('/profile', { preHandler: [authenticate] }, async (request, reply) => {
+    const { photoUrl, voiceId } = request.body;
+    console.log(`[AuthRoute] Updating profile for user ${request.user.id}:`, { photoUrl, voiceId });
+    await authService.updateProfile(request.user.id, { photoUrl, voiceId });
+    return { data: { success: true }, error: null, meta: null };
+  });
 }
 
 module.exports = authRoutes;

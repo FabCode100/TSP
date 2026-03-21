@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, Send, User, Bot, Loader2, Info, Share2, Link, Users, Mic, Volume2, Square } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { getTwinProfile, sendTwinMessage } from '@/actions/db';
+import { getTwinProfile, sendTwinMessage, generateAvatar as generateAvatarAction } from '@/actions/db';
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 
 export default function Emergente() {
@@ -15,13 +15,18 @@ export default function Emergente() {
   const [showIntro, setShowIntro] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const { isRecording, isTranscribing, isSpeaking, startRecording, stopRecording, speak, stopSpeaking } = useAudioRecorder();
+  const { isRecording, isTranscribing, isSpeaking, startRecording, stopRecording, speak, stopSpeaking, playRemoteAudio } = useAudioRecorder();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [isGeneratingAvatar, setIsGeneratingAvatar] = useState(false);
 
   useEffect(() => {
     getTwinProfile().then(setProfile);
-  }, []);
+    
+    // Cleanup: Stop audio when leaving the page
+    return () => {
+      stopSpeaking();
+    };
+  }, [stopSpeaking]);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -56,6 +61,7 @@ export default function Emergente() {
         generateAvatar(currentResponse, profile.photo_url);
       }
     } catch (error) {
+      console.error('Chat error:', error);
       setMessages(prev => [...prev, { role: 'twin', content: 'Desculpe, minha conexão com seu núcleo falhou momentaneamente.' }]);
     } finally {
       setIsTyping(false);
@@ -73,44 +79,33 @@ export default function Emergente() {
     }
   };
 
+  // Track the latest generation to prevent stale audio from playing
+  const generationIdRef = useRef(0);
+
   const generateAvatar = async (text: string, photoUrl: string) => {
+    // 1. Stop any currently playing audio immediately
+    stopSpeaking();
+
+    // 2. Mark this as the latest generation
+    const thisGeneration = ++generationIdRef.current;
     setIsGeneratingAvatar(true);
+
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/twin/avatar/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, photoUrl })
-      });
-      const data = await res.json();
-      if (data.success) {
-        pollAvatarStatus(data.jobId);
+      const data = await generateAvatarAction(text, photoUrl);
+      const { audioUrl } = data;
+
+      // 3. Only play if this is still the latest generation (user didn't send another msg)
+      if (audioUrl && thisGeneration === generationIdRef.current) {
+        stopSpeaking(); // Stop again in case browser TTS was triggered while waiting
+        playRemoteAudio(audioUrl);
       }
-    } catch (e) {
-      console.error('Failed to trigger avatar:', e);
-      setIsGeneratingAvatar(false);
+    } catch (err) {
+      console.error('Failed to generate avatar:', err);
+    } finally {
+      if (thisGeneration === generationIdRef.current) {
+        setIsGeneratingAvatar(false);
+      }
     }
-  };
-
-  const pollAvatarStatus = async (jobId: string) => {
-    const interval = setInterval(async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/twin/avatar/status/${jobId}`);
-        const result = await res.json();
-        if (result.success && result.data.status === 'completed') {
-          setAvatarUrl(result.data.video_url);
-          setIsGeneratingAvatar(false);
-          clearInterval(interval);
-        } else if (result.success && result.data.status === 'failed') {
-          setIsGeneratingAvatar(false);
-          clearInterval(interval);
-        }
-      } catch (e) {
-        console.error('Polling error:', e);
-      }
-    }, 3000);
-
-    // Stop polling after 2 minutes anyway
-    setTimeout(() => clearInterval(interval), 120000);
   };
 
   return (
@@ -177,7 +172,7 @@ export default function Emergente() {
               className={`mb-6 flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
             >
               <div className={`max-w-[85%] flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden ${
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 overflow-hidden relative ${
                   msg.role === 'user' ? 'bg-threshold text-whisper' : 'bg-membrane border border-pulse/30 text-pulse'
                 }`}>
                   {msg.role === 'user' ? (
@@ -192,7 +187,28 @@ export default function Emergente() {
                       />
                     ) : (
                       profile?.photo_url ? (
-                        <img src={profile.photo_url} className="w-full h-full object-cover" alt="Twin" />
+                        <>
+                          <img src={profile.photo_url} className="w-full h-full object-cover" alt="Twin" />
+                          {/* Talking Animation Overlay */}
+                          {isSpeaking && idx === messages.length - 1 && (
+                            <motion.div 
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              className="absolute inset-0 bg-pulse/20 flex items-center justify-center backdrop-blur-[1px]"
+                            >
+                              <div className="flex gap-1 items-end h-4">
+                                {[1, 2, 3, 2, 1].map((h, i) => (
+                                  <motion.div 
+                                    key={i}
+                                    className="w-1 bg-signal"
+                                    animate={{ height: [8, 16, 12, 16, 8] }}
+                                    transition={{ repeat: Infinity, duration: 0.5, delay: i * 0.1 }}
+                                  />
+                                ))}
+                              </div>
+                            </motion.div>
+                          )}
+                        </>
                       ) : (
                         <Bot size={16} />
                       )
@@ -208,8 +224,9 @@ export default function Emergente() {
                     {msg.content}
                     {msg.role === 'twin' && msg.content && (
                       <button 
-                        onClick={() => speak(msg.content)}
-                        className="self-end text-pulse/40 hover:text-pulse transition-colors"
+                        onClick={() => generateAvatar(msg.content, profile?.photo_url)}
+                        className={`self-end transition-colors ${isGeneratingAvatar ? 'text-pulse animate-pulse' : 'text-pulse/40 hover:text-pulse'}`}
+                        disabled={isGeneratingAvatar}
                       >
                         <Volume2 size={12} />
                       </button>

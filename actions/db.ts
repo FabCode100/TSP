@@ -34,6 +34,7 @@ export async function loginWithGoogleMock() {
     }
 
     // 2. Abre o popup/modal nativo de contas do Google
+    // @ts-ignore: type requires options, but Android native crashes if options are passed without modifying MainActivity
     const { result } = await SocialLogin.login({
       provider: 'google'
     });

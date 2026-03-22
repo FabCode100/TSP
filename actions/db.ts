@@ -44,11 +44,9 @@ export async function loginWithGoogleMock() {
 
     const { result } = await SocialLogin.login({
       provider: 'google',
-      ...(isWeb && {
-        options: {
-          scopes: ['email', 'profile']
-        }
-      })
+      options: isWeb ? {
+        scopes: ['email', 'profile']
+      } : {} as any
     });
 
     console.log('[Auth] Google Auth Result:', result);

@@ -36,6 +36,10 @@ jobs:
       - name: Capacitor Sync
         run: npx cap sync android
 
+      - name: Print Keystore SHA-1 for Firebase
+        run: |
+          keytool -list -v -keystore android/app/debug.keystore -alias androiddebugkey -storepass android | grep SHA1
+
       - name: Build APK
         run: |
           cd android

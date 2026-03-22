@@ -54,6 +54,10 @@ export async function loginWithGoogleMock() {
     if (result && 'profile' in result && result.profile) {
       const idToken = result.idToken;
 
+      if (typeof window !== 'undefined') {
+        alert("Chamando Backend: " + `${API_URL}/auth/google`);
+      }
+
       // 3. Envia o token verdadeiro para o nosso Fastify validar
       const loginRes = await fetch(`${API_URL}/auth/google`, {
         method: 'POST',
@@ -72,10 +76,16 @@ export async function loginWithGoogleMock() {
           localStorage.setItem('tsp_token', token);
           return token;
         }
+      } else {
+        const errorText = await loginRes.text();
+        alert("BACKEND REJEITOU (Status " + loginRes.status + "): " + errorText);
       }
     }
   } catch (e: any) {
     console.error('[Auth] Google Auth Failed:', e);
+    if (typeof window !== 'undefined') {
+      alert("ERRO DETALHADO: " + (e?.message || JSON.stringify(e)));
+    }
     throw new Error(e.message || JSON.stringify(e));
   }
   return null;

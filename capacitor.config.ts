@@ -10,6 +10,10 @@ const config: CapacitorConfig = {
         webClientId: "832774033925-1nrqdnelo8kbp2d4ulu2vuargb9vq6ln.apps.googleusercontent.com"
       }
     }
+  },
+  server: {
+    cleartext: true,
+    androidScheme: 'http'
   }
 };
 

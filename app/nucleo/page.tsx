@@ -21,6 +21,7 @@ type Link = d3.SimulationLinkDatum<Node> & {
 };
 
 export default function Nucleo() {
+  const router = useRouter();
   const svgRef = useRef<SVGSVGElement>(null);
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [graphData, setGraphData] = useState<{nodes: Node[], links: Link[]}>({ nodes: [], links: [] });

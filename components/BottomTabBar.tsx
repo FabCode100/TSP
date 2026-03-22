@@ -11,7 +11,7 @@ export function BottomTabBar({ onFabClick }: { onFabClick: () => void }) {
   if (pathname === '/onboarding' || pathname === '/login') return null;
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 h-[60px] pb-[env(safe-area-inset-bottom,34px)] bg-membrane/80 backdrop-blur-md z-40 flex items-center justify-between px-6">
+    <div className="absolute bottom-0 left-0 right-0 h-[60px] pb-[env(safe-area-inset-bottom,34px)] bg-deep/90 border-t border-threshold/50 backdrop-blur-md z-40 flex items-center justify-between px-6 shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
       <div className="flex flex-1 items-center justify-around pr-4">
         <button onClick={() => router.push('/pulso')} className={`p-2 transition-colors ${pathname === '/pulso' ? 'text-pulse' : 'text-whisper'}`}>
           <Activity size={24} strokeWidth={1.5} />

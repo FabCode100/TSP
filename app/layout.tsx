@@ -38,15 +38,19 @@ export const metadata: Metadata = {
   },
 };
 
+import { ThemeProvider } from '@/components/ThemeProvider';
+
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="pt-BR" className={`${cormorantGaramond.variable} ${dmMono.variable} ${instrumentSerif.variable}`}>
+    <html lang="pt-BR" className={`${cormorantGaramond.variable} ${dmMono.variable} ${instrumentSerif.variable}`} suppressHydrationWarning>
       <body className="bg-void text-signal font-body antialiased overflow-hidden" suppressHydrationWarning>
-        <div className="mx-auto w-full max-w-[390px] h-[100dvh] relative overflow-hidden bg-void shadow-2xl sm:border sm:border-membrane sm:rounded-[40px] sm:h-[844px] sm:mt-8">
-          <AppWrapper>
-            {children}
-          </AppWrapper>
-        </div>
+        <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false}>
+          <div className="mx-auto w-full max-w-[390px] h-[100dvh] relative overflow-hidden bg-void shadow-2xl sm:border sm:border-membrane sm:rounded-[40px] sm:h-[844px] sm:mt-8">
+            <AppWrapper>
+              {children}
+            </AppWrapper>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

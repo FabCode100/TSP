@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  --color-void: #050508;
-  --color-deep: #0A0A12;
-  --color-membrane: #12121E;
-  --color-threshold: #1E1E2E;
-  --color-signal: #E8E4D9;
-  --color-whisper: #6B6878;
-  --color-pulse: #7B9CFF;
-  --color-synapse: #A78BFA;
-  --color-emergence: #34D399;
+  --color-void: var(--void);
+  --color-deep: var(--deep);
+  --color-membrane: var(--membrane);
+  --color-threshold: var(--threshold);
+  --color-signal: var(--signal);
+  --color-whisper: var(--whisper);
+  --color-pulse: var(--pulse);
+  --color-synapse: var(--synapse);
+  --color-emergence: var(--emergence);
 
   --font-display: var(--font-display);
   --font-interface: var(--font-interface);
@@ -26,6 +26,18 @@
   --pulse: #7B9CFF;
   --synapse: #A78BFA;
   --emergence: #34D399;
+}
+
+:root[data-theme='light'] {
+  --void: #FAFAFA;
+  --deep: #FFFFFF;
+  --membrane: #E5E7EB;
+  --threshold: #D1D5DB;
+  --signal: #111827;
+  --whisper: #6B7280;
+  --pulse: #3B82F6;
+  --synapse: #8B5CF6;
+  --emergence: #10B981;
 }
 
 body {

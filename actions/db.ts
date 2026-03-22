@@ -19,6 +19,9 @@ export async function clearAuthToken() {
 }
 export async function loginWithGoogleMock() {
   console.log('[Auth] Attempting Google Auth via CapGo Social Login');
+  if (typeof window !== 'undefined') {
+    alert("USANDO API_URL: " + API_URL);
+  }
 
   try {
     // Dynamic import to avoid build errors when not running in Capacitor
@@ -34,9 +37,13 @@ export async function loginWithGoogleMock() {
     }
 
     // 2. Abre o popup/modal nativo de contas do Google
-    // @ts-ignore: type requires options, but Android native crashes if options are passed without modifying MainActivity
     const { result } = await SocialLogin.login({
-      provider: 'google'
+      provider: 'google',
+      options: {
+        google: {
+          scopes: ['email', 'profile']
+        }
+      }
     });
 
     console.log('[Auth] Google Auth Result:', result);

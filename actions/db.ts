@@ -72,6 +72,45 @@ export async function loginWithGoogleMock() {
   return null;
 }
 
+export async function forceMockLogin() {
+  console.log('[Auth] Attempting Bypass Mock Login');
+  try {
+    const loginRes = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: MOCK_EMAIL, password: MOCK_PASS })
+    });
+
+    if (loginRes.ok) {
+      const data = await loginRes.json();
+      const token = data.data.token;
+      if (token) {
+        localStorage.setItem('tsp_token', token);
+        return token;
+      }
+    } else {
+      console.log('[Auth] Mock user not found, registering...');
+      const regRes = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: MOCK_EMAIL, password: MOCK_PASS, onboardingAnswers: [] })
+      });
+      
+      if (regRes.ok) {
+        const regData = await regRes.json();
+        const token = regData.data.token;
+        if (token) {
+          localStorage.setItem('tsp_token', token);
+          return token;
+        }
+      }
+    }
+  } catch (e) {
+    console.error('[Auth] Bypass Mock Login Failed:', e);
+  }
+  return null;
+}
+
 export async function handleGoogleRedirect() {
   try {
     const { SocialLogin } = await import('@capgo/capacitor-social-login');

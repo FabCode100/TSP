@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { loginWithGoogleMock, handleGoogleRedirect } from '@/actions/db';
+import { loginWithGoogleMock, handleGoogleRedirect, forceMockLogin } from '@/actions/db';
 import { Loader2 } from 'lucide-react';
 
 export default function Login() {
@@ -39,6 +39,20 @@ export default function Login() {
       }
     } catch (error) {
       console.error('Falha no login:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleBypassLogin = async () => {
+    setIsLoading(true);
+    try {
+      const token = await forceMockLogin();
+      if (token) {
+        router.push('/');
+      }
+    } catch (error) {
+      console.error('Falha no Bypass:', error);
     } finally {
       setIsLoading(false);
     }
@@ -88,6 +102,14 @@ export default function Login() {
                 <span className="font-medium">Continuar com Google</span>
               </>
             )}
+          </button>
+
+          <button 
+            onClick={handleBypassLogin}
+            disabled={isLoading}
+            className="w-full text-whisper hover:text-pulse text-sm mt-4 transition-colors duration-300 font-medium disabled:opacity-50"
+          >
+            Acesso Desenvolvedor (Bypass Mobile)
           </button>
         </div>
       </main>

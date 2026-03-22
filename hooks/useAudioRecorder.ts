@@ -16,7 +16,10 @@ export function useAudioRecorder() {
         synthRef.current = window.speechSynthesis;
       }
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const mimeType = ['audio/aac', 'audio/mp4', 'audio/webm'].find(type => MediaRecorder.isTypeSupported(type));
+      console.log('[Audio] Using MIME type:', mimeType);
+      
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       chunksRef.current = [];
 
@@ -45,11 +48,13 @@ export function useAudioRecorder() {
         setIsRecording(false);
         setIsTranscribing(true);
         
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        const audioFile = new File([audioBlob], 'audio.webm', { type: 'audio/webm' });
+        const audioBlob = new Blob(chunksRef.current, { type: mediaRecorderRef.current?.mimeType || 'audio/webm' });
+        const audioFile = new File([audioBlob], 'audio.aac', { type: audioBlob.type });
         
         try {
+          console.log('[Audio] Transcribing file size:', audioFile.size);
           const text = await transcribeAudio(audioFile);
+          console.log('[Audio] Transcription result:', text);
           resolve(text);
         } catch (error) {
           console.error('Error transcribing:', error);

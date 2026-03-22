@@ -78,14 +78,16 @@ export function FABSheet({ isOpen, onClose, onSave }: { isOpen: boolean; onClose
                 <button onClick={handleClose} className="text-whisper">✕</button>
               </div>
               
-              <textarea
-                ref={textareaRef}
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder={isRecording ? "Ouvindo..." : isTranscribing ? "Transcrevendo..." : "O que está acontecendo agora?"}
-                disabled={isRecording || isTranscribing}
-                className="flex-1 bg-transparent border-none resize-none focus:ring-0 text-body text-[18px] text-signal placeholder:text-whisper/50"
-              />
+              <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+                <textarea
+                  ref={textareaRef}
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder={isRecording ? "Ouvindo..." : isTranscribing ? "Transcrevendo..." : "O que está acontecendo agora?"}
+                  disabled={isRecording || isTranscribing}
+                  className="w-full flex-1 bg-transparent border-none resize-none focus:ring-0 text-body text-[18px] text-signal placeholder:text-whisper/50"
+                />
+              </div>
               
               <div className="flex justify-between items-center mt-4">
                 <button

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import * as d3 from 'd3';
 import { motion, AnimatePresence } from 'motion/react';
 import { getGraphData } from '@/actions/db';
+import { useRouter } from 'next/navigation';
 
 type Node = d3.SimulationNodeDatum & {
   id: string;
@@ -188,7 +189,7 @@ export default function Nucleo() {
       <div className="absolute top-12 left-6 right-6 z-10 flex justify-between items-center pointer-events-none">
         <h1 className="font-display text-[28px] text-signal leading-none pointer-events-auto">Núcleo</h1>
         <button 
-          onClick={() => window.location.href = '/padroes'}
+          onClick={() => router.push('/padroes')}
           className="px-4 py-2 bg-membrane/40 backdrop-blur-md border border-threshold rounded-full text-[11px] font-interface text-whisper uppercase tracking-widest hover:text-pulse hover:border-pulse transition-all pointer-events-auto"
         >
           Ver Padrões

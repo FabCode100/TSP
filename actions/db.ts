@@ -19,10 +19,6 @@ export async function clearAuthToken() {
 }
 export async function loginWithGoogleMock() {
   console.log('[Auth] Attempting Google Auth via CapGo Social Login');
-  if (typeof window !== 'undefined') {
-    alert("USANDO API_URL: " + API_URL);
-  }
-
   try {
     // Dynamic import to avoid build errors when not running in Capacitor
     const { SocialLogin } = await import('@capgo/capacitor-social-login');
@@ -54,10 +50,6 @@ export async function loginWithGoogleMock() {
     if (result && 'profile' in result && result.profile) {
       const idToken = result.idToken;
 
-      if (typeof window !== 'undefined') {
-        alert("Chamando Backend: " + `${API_URL}/auth/google`);
-      }
-
       // 3. Envia o token verdadeiro para o nosso Fastify validar
       const loginRes = await fetch(`${API_URL}/auth/google`, {
         method: 'POST',
@@ -78,14 +70,11 @@ export async function loginWithGoogleMock() {
         }
       } else {
         const errorText = await loginRes.text();
-        alert("BACKEND REJEITOU (Status " + loginRes.status + "): " + errorText);
+        console.error("[Auth] Backend rejected login:", loginRes.status, errorText);
       }
     }
   } catch (e: any) {
     console.error('[Auth] Google Auth Failed:', e);
-    if (typeof window !== 'undefined') {
-      alert("ERRO DETALHADO: " + (e?.message || JSON.stringify(e)));
-    }
     throw new Error(e.message || JSON.stringify(e));
   }
   return null;

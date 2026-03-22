@@ -12,7 +12,20 @@
           "package_name": "io.symbiosis.protocol"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "832774033925-rr64aae30l8fr9a9istkd0pnp62bub3u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.symbiosis.protocol",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "832774033925-1nrqdnelo8kbp2d4ulu2vuargb9vq6ln.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAwQFMbBN7Xa95aHlwhIm_ZM3xdE8HW2Hw"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "832774033925-1nrqdnelo8kbp2d4ulu2vuargb9vq6ln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

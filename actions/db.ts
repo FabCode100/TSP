@@ -28,7 +28,7 @@ export async function loginWithGoogleMock() {
     if (typeof window !== 'undefined') {
       await SocialLogin.initialize({
         google: {
-          webClientId: '373842633648-jdjblnkhroppt9rgk4j7bltdb13uivou.apps.googleusercontent.com',
+          webClientId: '832774033925-1nrqdnelo8kbp2d4ulu2vuargb9vq6ln.apps.googleusercontent.com',
         },
       });
     }
@@ -94,7 +94,7 @@ export async function forceMockLogin() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: MOCK_EMAIL, password: MOCK_PASS, onboardingAnswers: [] })
       });
-      
+
       if (regRes.ok) {
         const regData = await regRes.json();
         const token = regData.data.token;
@@ -150,7 +150,7 @@ export async function handleGoogleRedirect() {
           return token;
         }
       } else {
-          console.error('[Auth] Backend validation failed:', await loginRes.text());
+        console.error('[Auth] Backend validation failed:', await loginRes.text());
       }
     }
   } catch (e) {
@@ -321,9 +321,9 @@ export async function* sendTwinMessage(message: string) {
           const { content } = JSON.parse(dataStr);
           if (content) yield content;
         } catch (e) { }
+      }
     }
   }
-}
 }
 
 // =============================================

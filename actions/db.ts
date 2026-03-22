@@ -40,9 +40,7 @@ export async function loginWithGoogleMock() {
     const { result } = await SocialLogin.login({
       provider: 'google',
       options: {
-        google: {
-          scopes: ['email', 'profile']
-        }
+        scopes: ['email', 'profile']
       }
     });
 

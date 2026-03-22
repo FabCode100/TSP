@@ -35,10 +35,7 @@ export async function loginWithGoogleMock() {
 
     // 2. Abre o popup/modal nativo de contas do Google
     const { result } = await SocialLogin.login({
-      provider: 'google',
-      options: {
-        scopes: ['profile', 'email'],
-      },
+      provider: 'google'
     });
 
     console.log('[Auth] Google Auth Result:', result);

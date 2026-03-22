@@ -1,7 +1,7 @@
 // This file replaces the Next.js Server Actions to work with Capacitor (Static Export).
 // It acts as an HTTP client connecting to the Fastify backend.
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://192.168.0.2:3001';
 
 // MOCK USER: We use a fresh email to ensure we are registering a brand new user with correctly hashed password.
 const MOCK_EMAIL = 'agent_tester_01@symbiosis.ai';

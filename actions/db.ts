@@ -66,8 +66,9 @@ export async function loginWithGoogleMock() {
         }
       }
     }
-  } catch (e) {
+  } catch (e: any) {
     console.error('[Auth] Google Auth Failed:', e);
+    throw new Error(e.message || JSON.stringify(e));
   }
   return null;
 }

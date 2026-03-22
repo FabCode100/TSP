@@ -37,8 +37,9 @@ export default function Login() {
         // Redireciona para o verificador principal (onboarding ou pulso)
         router.push('/');
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Falha no login:', error);
+      alert("ERRO GOOGLE AUTH: " + (error?.message || JSON.stringify(error)));
     } finally {
       setIsLoading(false);
     }

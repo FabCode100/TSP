@@ -9,3 +9,4 @@ coverage/
 !package.json
 !tsconfig.json
 !next.config.json
+!android/app/google-services.json

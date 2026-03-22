@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "832774033925",
+    "project_id": "the-symbiotic-protocol",
+    "storage_bucket": "the-symbiotic-protocol.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:832774033925:android:83c4355d9848ff215a426c",
+        "android_client_info": {
+          "package_name": "io.symbiosis.protocol"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwQFMbBN7Xa95aHlwhIm_ZM3xdE8HW2Hw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

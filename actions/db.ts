@@ -37,11 +37,18 @@ export async function loginWithGoogleMock() {
     }
 
     // 2. Abre o popup/modal nativo de contas do Google
+    const { Capacitor } = await import('@capacitor/core');
+    const isWeb = Capacitor.getPlatform() === 'web';
+    
+    console.log('[Auth] Platform detected:', Capacitor.getPlatform());
+
     const { result } = await SocialLogin.login({
       provider: 'google',
-      options: {
-        scopes: ['email', 'profile']
-      }
+      ...(isWeb && {
+        options: {
+          scopes: ['email', 'profile']
+        }
+      })
     });
 
     console.log('[Auth] Google Auth Result:', result);

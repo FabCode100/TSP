@@ -4,7 +4,7 @@ const Groq = require('groq-sdk');
 const { BUILD_IDENTITY_MODEL_PROMPT, TWIN_SYSTEM_PROMPT, TWIN_SESSION_SUMMARY_PROMPT } = require('../core/prompts');
 
 const prisma = new PrismaClient();
-const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY });
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY || process.env.NEXT_PUBLIC_GROQ_API_KEY || process.env.RENDER_GROQ_API_KEY });
 
 class TwinSharingService {
   // Generate a short 6-char hex token for sharing

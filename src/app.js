@@ -24,6 +24,12 @@ function buildApp(opts = {}) {
     credentials: true,
   });
 
+  // Security Headers for OAuth Popups
+  app.addHook('onSend', async (request, reply, payload) => {
+    reply.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    return payload;
+  });
+
   // Global Error Handler
   app.setErrorHandler(errorHandler);
 

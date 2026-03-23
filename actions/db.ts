@@ -27,7 +27,7 @@ export async function loginWithGoogleMock() {
     if (typeof window !== 'undefined') {
       await SocialLogin.initialize({
         google: {
-          webClientId: '832774033925-1nrqdnelo8kbp2d4ulu2vuargb9vq6ln.apps.googleusercontent.com',
+          webClientId: '373842633648-jdjblnkhroppt9rgk4j7bltdb13uivou.apps.googleusercontent.com',
         },
       });
     }

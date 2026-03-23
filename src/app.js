@@ -26,7 +26,7 @@ function buildApp(opts = {}) {
 
   // Security Headers for OAuth Popups
   app.addHook('onSend', async (request, reply, payload) => {
-    reply.header('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    reply.header('Cross-Origin-Opener-Policy', 'unsafe-none');
     return payload;
   });
 

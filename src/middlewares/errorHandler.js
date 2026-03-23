@@ -7,7 +7,9 @@ const errorHandler = (error, request, reply) => {
   reply.status(statusCode).send({
     error: {
       code: statusCode,
-      message,
+      message: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      details: error.toString() // Adicionado para debug no Render
     },
     meta: {
       timestamp: new Date().toISOString(),

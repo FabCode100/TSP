@@ -14,7 +14,7 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/src ./src
 COPY --from=builder /app/out ./out
-COPY --from=builder /app/.env.local ./.env.local
+COPY --from=builder /app/the-symbiotic-protocol-firebase-adminsdk-fbsvc-0effdcdda6.json ./
 
 EXPOSE 3001
 CMD ["npm", "run", "start:api"]

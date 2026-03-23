@@ -10,7 +10,9 @@
     "start": "next start",
     "start:api": "node src/server.js",
     "lint": "eslint .",
-    "clean": "next clean"
+    "clean": "next clean",
+    "prisma:generate": "prisma generate --schema=src/prisma/schema.prisma",
+    "prisma:push": "prisma db push --schema=src/prisma/schema.prisma"
   },
   "dependencies": {
     "@capacitor/android": "^8.2.0",
